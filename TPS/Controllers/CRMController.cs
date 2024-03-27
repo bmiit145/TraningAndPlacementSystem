@@ -21,12 +21,6 @@ namespace Velzon.Controllers
             return View();
         }
 
-        [ActionName("Deals")]
-        public IActionResult Deals()
-        {
-            return View();
-        }
-
         [ActionName("Leads")]
         public IActionResult Leads()
         {
