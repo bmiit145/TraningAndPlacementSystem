@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
-using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,29 @@ namespace TPS.Controllers
 
         public ActionResult signinSubmit(string username, string password)
         {
-            if (username == "admin" && password == "admin")
-            {
-                return RedirectToAction("Index", "User");
+
+            db.open();
+            SqlCommand cmd = new SqlCommand("select username , password , role from users where username = @username AND password = @password ", db.conn);
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.Parameters.AddWithValue("@password", password);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if(dr.HasRows){
+                while (dr.Read())
+                {
+                    // store username and role in session
+                    HttpContext.Session.SetString("username", dr["username"].ToString());
+                    HttpContext.Session.SetString("role", dr["role"].ToString());
+
+                    // admin role as 1 and student role as 0
+                    if (dr["role"].ToString() == "1")
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Student");
+                    }
+                }
             }
             else
             {

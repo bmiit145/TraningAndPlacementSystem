@@ -11,7 +11,7 @@ namespace TPS.Controllers
 {
     public class DbController : Controller
     {
-        SqlConnection conn;
+       public SqlConnection conn;
         String connectionString = "Server=tcp:tpsbmiit.database.windows.net,1433;Initial Catalog=tps;Persist Security Info=False;User ID=priyank;Password=Spirit@8414;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         public DbController()

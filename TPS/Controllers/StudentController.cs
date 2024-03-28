@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TPS.Controllers
 {
-    public class UserController : Controller
+    public class StudentController : Controller
     {
         // GET: /<controller>/
         public IActionResult Index()
