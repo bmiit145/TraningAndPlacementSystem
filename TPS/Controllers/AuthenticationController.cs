@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -16,12 +17,33 @@ namespace TPS.Controllers
         public IActionResult SignIn()
         {
             db.InsertInitialAdminData("admin" , "admin");
+
+            // check role from sessiom if session available then redirect to dashboard
+            ISession session = HttpContext.Session;
+            if (session.GetString("role") != null)
+            {
+                if (session.GetString("role") == "1")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Student");
+                }
+            }
             return View();
         }
 
 
         public ActionResult signinSubmit(string username, string password)
         {
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+    {
+        ViewBag.Error = "Please enter a username and password.";
+        return View("Signin");
+    }
+
 
             db.open();
             SqlCommand cmd = new SqlCommand("select username , password , role from users where username = @username AND password = @password ", db.conn);
@@ -32,10 +54,11 @@ namespace TPS.Controllers
                 while (dr.Read())
                 {
                     // store username and role in session
-                    HttpContext.Session.SetString("username", dr["username"].ToString());
-                    HttpContext.Session.SetString("role", dr["role"].ToString());
 
-                    // admin role as 1 and student role as 0
+                    ISession session = HttpContext.Session;
+                    session.SetString("username", dr["username"].ToString());
+                    session.SetString("role", dr["role"].ToString());
+
                     if (dr["role"].ToString() == "1")
                     {
                         return RedirectToAction("Index", "Admin");
@@ -51,6 +74,9 @@ namespace TPS.Controllers
                 ViewBag.Error = "Invalid username or password.";
                 return View("Signin");
             }
+
+            ViewBag.Error = "Something Wents Wrong!";
+            return View("Signin");
         }
 
         [ActionName("Offline")]
