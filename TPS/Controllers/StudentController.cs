@@ -13,6 +13,11 @@ namespace TPS.Controllers
         // GET: /<controller>/
         public IActionResult Index()
         {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
             return View("Dashboard");
         }
     }

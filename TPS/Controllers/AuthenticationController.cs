@@ -13,10 +13,28 @@ namespace TPS.Controllers
     public class AuthenticationController : Controller
     {
         DbController db = new DbController();
+
         [ActionName("SignIn")]
         public IActionResult SignIn()
         {
             db.InsertInitialAdminData("admin", "admin");
+
+            //check for remember me cookie
+            if (Request.Cookies["username"] != null && Request.Cookies["role"] != null)
+            {
+                // store username and role in session
+                ISession Session = HttpContext.Session;
+                Session.SetString("username", Request.Cookies["username"]);
+                Session.SetString("role", Request.Cookies["role"]);
+                if (Request.Cookies["role"] == "1")
+                {
+                    return RedirectToAction("Index", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Student");
+                }
+            }
 
             // check role from sessiom if session available then redirect to dashboard
             ISession session = HttpContext.Session;
@@ -35,7 +53,7 @@ namespace TPS.Controllers
         }
 
 
-        public ActionResult signinSubmit(string username, string password)
+        public ActionResult signinSubmit(string username, string password , bool rememberMe = false)
         {
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
@@ -55,10 +73,17 @@ namespace TPS.Controllers
                 while (dr.Read())
                 {
                     // store username and role in session
-
                     ISession session = HttpContext.Session;
                     session.SetString("username", dr["username"].ToString());
                     session.SetString("role", dr["role"].ToString());
+
+                    if (rememberMe)
+                        {
+                            // store username and role in cookie for remember me
+                            Response.Cookies.Append("username", dr["username"].ToString());
+                            Response.Cookies.Append("role", dr["role"].ToString());
+                        }
+
 
                     if (dr["role"].ToString() == "1")
                     {
