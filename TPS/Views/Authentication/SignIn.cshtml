@@ -69,7 +69,7 @@
 
                                         <div class="mb-3">
                                             <div class="float-end">
-                                                <a href="@Url.Action("PasswordResetBasic", "Authentication")" class="text-muted">Forgot password?</a>
+                                                <a href="@Url.Action("PasswordReset", "Authentication")" class="text-muted">Forgot password?</a>
                                             </div>
                                             <label class="form-label" for="password-input">Password</label>
                                             <div class="position-relative auth-pass-inputgroup mb-3">
@@ -141,6 +141,12 @@
             if (error) {
                 toastr.error(error);
                 @(ViewBag.Error = null)
+            }
+
+            var success = "@(ViewBag.Success)";
+            if (success) {
+                toastr.success(success);
+                @(ViewBag.Success = null)
             }
         });
     </script>
