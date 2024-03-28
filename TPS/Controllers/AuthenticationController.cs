@@ -1,19 +1,30 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Velzon.Controllers
+namespace TPS.Controllers
 {
     public class AuthenticationController : Controller
     {
-
         [ActionName("SignInBasic")]
         public IActionResult SignInBasic()
         {
+
+            DbController db = new DbController();
+            db.InsertInitialAdminData("admin" , "admin");
             return View();
         }
+
+        [ActionName("Offline")]
+        public ActionResult Offline()
+        {
+            return View("~/Views/Authentication/offline.cshtml");
+        }
+
+
 
         [ActionName("SignInCover")]
         public IActionResult SignInCover()
@@ -129,11 +140,6 @@ namespace Velzon.Controllers
             return View();
         }
 		
-		[ActionName("Offline")]
-        public IActionResult Offline()
-        {
-            return View();
-        }
-
+		
     }
 }
