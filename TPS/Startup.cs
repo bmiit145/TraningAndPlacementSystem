@@ -50,7 +50,7 @@ namespace Velzon
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=DashBoard}/{action=Index}/{id?}");
+                    pattern: "{controller=Authentication}/{action=SignInBasic}/{id?}");
             });
         }
     }
