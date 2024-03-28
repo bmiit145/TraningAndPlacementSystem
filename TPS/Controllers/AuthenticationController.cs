@@ -16,7 +16,7 @@ namespace TPS.Controllers
         [ActionName("SignIn")]
         public IActionResult SignIn()
         {
-            db.InsertInitialAdminData("admin" , "admin");
+            db.InsertInitialAdminData("admin", "admin");
 
             // check role from sessiom if session available then redirect to dashboard
             ISession session = HttpContext.Session;
@@ -39,10 +39,10 @@ namespace TPS.Controllers
         {
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-    {
-        ViewBag.Error = "Please enter a username and password.";
-        return View("Signin");
-    }
+            {
+                ViewBag.Error = "Please enter a username and password.";
+                return View("Signin");
+            }
 
 
             db.open();
@@ -50,7 +50,8 @@ namespace TPS.Controllers
             cmd.Parameters.AddWithValue("@username", username);
             cmd.Parameters.AddWithValue("@password", password);
             SqlDataReader dr = cmd.ExecuteReader();
-            if(dr.HasRows){
+            if (dr.HasRows)
+            {
                 while (dr.Read())
                 {
                     // store username and role in session
@@ -79,6 +80,25 @@ namespace TPS.Controllers
             return View("Signin");
         }
 
+        // code for register and after register redirect to login page
+        public ActionResult registerSubmit(string username, string password)
+        {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                ViewBag.Error = "Please enter a username and password.";
+                return View("SignUp");
+            }
+
+            db.open();
+            SqlCommand cmd = new SqlCommand("insert into users (username , password , role) values (@username , @password , @role)", db.conn);
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.Parameters.AddWithValue("@password", password);
+            cmd.Parameters.AddWithValue("@role", 0);
+            cmd.ExecuteNonQuery();
+            db.close();
+            return RedirectToAction("SignIn");
+        }
+
         [ActionName("Offline")]
         public ActionResult Offline()
         {
@@ -97,8 +117,8 @@ namespace TPS.Controllers
         {
             return View();
         }
-		
-		[ActionName("PasswordChangeBasic")]
+
+        [ActionName("PasswordChangeBasic")]
         public IActionResult PasswordChangeBasic()
         {
             return View();
@@ -193,7 +213,7 @@ namespace TPS.Controllers
         {
             return View();
         }
-		
-		
+
+
     }
 }
