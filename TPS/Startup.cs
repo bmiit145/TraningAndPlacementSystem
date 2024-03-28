@@ -51,7 +51,7 @@ namespace TPS
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Authentication}/{action=SignInBasic}/{id?}");
+                    pattern: "{controller=Authentication}/{action=SignIn}/{id?}");
             });
         }
     }

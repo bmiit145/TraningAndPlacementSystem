@@ -34,7 +34,18 @@
 
     @RenderSection("scripts", required: false)
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+
+    <script>
+        // Check if ViewBag.Error is present and show toast message
+        $(document).ready(function(){
+            var error = "@(ViewBag.Error)";
+            if (error) {
+                toastr.error(error);
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,26 @@ namespace TPS.Controllers
 {
     public class AuthenticationController : Controller
     {
-        [ActionName("SignInBasic")]
-        public IActionResult SignInBasic()
+        DbController db = new DbController();
+        [ActionName("SignIn")]
+        public IActionResult SignIn()
         {
-
-            DbController db = new DbController();
             db.InsertInitialAdminData("admin" , "admin");
             return View();
+        }
+
+
+        public ActionResult signinSubmit(string username, string password)
+        {
+            if (username == "admin" && password == "admin")
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+            else
+            {
+                ViewBag.Error = "Invalid username or password.";
+                return View("Signin");
+            }
         }
 
         [ActionName("Offline")]
@@ -25,15 +39,8 @@ namespace TPS.Controllers
         }
 
 
-
-        [ActionName("SignInCover")]
-        public IActionResult SignInCover()
-        {
-            return View();
-        }
-
-        [ActionName("SignUpBasic")]
-        public IActionResult SignUpBasic()
+        [ActionName("SignUp")]
+        public IActionResult SignUp()
         {
             return View();
         }
