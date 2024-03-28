@@ -131,7 +131,9 @@ namespace TPS.Controllers
             // do the logout process here
             ISession session = HttpContext.Session;
             session.Clear();
-            return View();
+            Response.Cookies.Delete("username");
+            Response.Cookies.Delete("role");
+            return RedirectToAction("SignIn");
         }
 
 
