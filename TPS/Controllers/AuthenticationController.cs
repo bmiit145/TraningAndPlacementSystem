@@ -137,6 +137,12 @@ namespace TPS.Controllers
             return View();
         }
 
+        [ActionName("Profile")]
+        public IActionResult Profile()
+        {
+            return View();
+        }
+
         [ActionName("SignUpCover")]
         public IActionResult SignUpCover()
         {
