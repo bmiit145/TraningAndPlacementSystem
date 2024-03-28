@@ -124,6 +124,17 @@ namespace TPS.Controllers
             return RedirectToAction("SignIn");
         }
 
+
+        [ActionName("Logout")]
+        public IActionResult Logout()
+        {
+            // do the logout process here
+            ISession session = HttpContext.Session;
+            session.Clear();
+            return View();
+        }
+
+
         [ActionName("Offline")]
         public ActionResult Offline()
         {
@@ -185,15 +196,7 @@ namespace TPS.Controllers
             return View();
         }
 
-        [ActionName("Logout")]
-        public IActionResult Logout()
-        {
-            // do the logout process here
-            ISession session = HttpContext.Session;
-            session.Clear();
-            return View();
-        }
-
+        
         [ActionName("SuccessMessageBasic")]
         public IActionResult SuccessMessageBasic()
         {
