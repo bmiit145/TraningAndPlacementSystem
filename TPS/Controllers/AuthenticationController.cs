@@ -154,15 +154,12 @@ namespace TPS.Controllers
             return View();
         }
 
-        [ActionName("LogoutBasic")]
-        public IActionResult LogoutBasic()
+        [ActionName("Logout")]
+        public IActionResult Logout()
         {
-            return View();
-        }
-
-        [ActionName("LogoutCover")]
-        public IActionResult LogoutCover()
-        {
+            // do the logout process here
+            ISession session = HttpContext.Session;
+            session.Clear();
             return View();
         }
 
