@@ -23,7 +23,7 @@ namespace TPS.Controllers
         {
             if (username == "admin" && password == "admin")
             {
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToAction("Index", "User");
             }
             else
             {
