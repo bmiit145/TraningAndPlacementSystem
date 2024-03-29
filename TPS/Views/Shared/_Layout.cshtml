@@ -43,9 +43,17 @@
             var error = "@(ViewBag.Error)";
             if (error) {
                 toastr.error(error);
+                @(ViewBag.Error = null)
+            }
+
+            var success = "@(ViewBag.Success)";
+            if (success) {
+                toastr.success(success);
+                @(ViewBag.Success = null)
             }
         });
     </script>
+
 
 </body>
 </html>

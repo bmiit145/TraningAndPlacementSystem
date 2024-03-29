@@ -287,24 +287,49 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             string username = session.GetString("username");
 
 
-                        if (string.IsNullOrEmpty(new_password) || string.IsNullOrEmpty(con_password))
+            if (string.IsNullOrEmpty(new_password) || string.IsNullOrEmpty(con_password))
             {
                 ViewBag.Error = "Please enter a password and confirm password.";
-                return View("PasswordChange");
+                return View("Profile");
             }
 
             if(String.IsNullOrEmpty(username))
             {
                 ViewBag.Error = "Invalid username.";
-                return View("PasswordChange");
+                return View("Profile");
             }
 
             if (new_password != con_password)
             {
                 ViewBag.Error = "Password and confirm password do not match.";
-                return View("PasswordChange");
+                return View("Profile");
             }
 
+
+            // check old password
+            db.close();
+            db.open();
+            SqlCommand cmd1 = new SqlCommand("select password from users where username = @username", db.conn);
+            cmd1.Parameters.AddWithValue("@username", username);
+            SqlDataReader dr = cmd1.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    if (dr["password"].ToString() != old_password)
+                    {
+                        ViewBag.Error = "Old password is incorrect.";
+                        return View("Profile");
+                    }
+                }
+            }
+            else
+            {
+                ViewBag.Error = "Invalid username.";
+                return View("Profile");
+            }
+
+// update password
             db.close();
             db.open();
             SqlCommand cmd = new SqlCommand("update users set password = @password where username = @username", db.conn);
@@ -313,9 +338,9 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             cmd.ExecuteNonQuery();
             
             ViewBag.Success = "Password has been updated.";
-            return RedirectToAction("SignIn" , "Authentication");
+            return View("Profile");
 
-                  }
+            }
 
         [ActionName("UpdatePassword")]
         public IActionResult UpdatePassword(string username, string password , string con_password)

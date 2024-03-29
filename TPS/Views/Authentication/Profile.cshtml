@@ -8,6 +8,14 @@
 <head>
     @Html.Partial("~/Views/Shared/_title_meta.cshtml")
     @Html.Partial("~/Views/Shared/_head_css.cshtml")
+
+
+    <!-- Include jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Include CSS for toast notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 </head>
 <body>
     <!-- Begin page -->
@@ -264,7 +272,7 @@
                                                             </label>
                                                             <input type="password" class="form-control"
                                                                    id="oldpasswordInput"
-                                                                   name = "old_password"
+                                                                   name="old_password"
                                                                    placeholder="Enter current password">
                                                         </div>
                                                     </div>
@@ -276,7 +284,7 @@
                                                                 Password*
                                                             </label>
                                                             <input type="password" class="form-control"
-                                                            name="new_password"
+                                                                   name="new_password"
                                                                    id="newpasswordInput" placeholder="Enter new password">
                                                         </div>
                                                     </div>
@@ -660,5 +668,27 @@
 
     <!-- App js -->
     <script src="~/assets/js/app.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <script>
+        // Check if ViewBag.Error is present and show toast message
+        $(document).ready(function(){
+            var error = "@(ViewBag.Error)";
+            if (error) {
+                toastr.error(error);
+                @(ViewBag.Error = null)
+            }
+
+            var success = "@(ViewBag.Success)";
+            if (success) {
+                toastr.success(success);
+                @(ViewBag.Success = null)
+            }
+        });
+    </script>
+
 </body>
 </html>
