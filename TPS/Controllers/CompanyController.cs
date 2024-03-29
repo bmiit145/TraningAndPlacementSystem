@@ -90,6 +90,38 @@ namespace TPS.Controllers
             ViewBag.Message = "Company Deleted Successfully";
             return View("Index");
         }
+
+        [ActionName("editCompany")]
+        public ActionResult editCompany(int id)
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            //get company from database
+            SqlCommand cmd = new SqlCommand("SELECT * FROM CompanyProfile WHERE company_id=@id", db.conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader = cmd.ExecuteReader();
+            Company company = new Company()
+            {
+                Name = string.Empty,
+                IndustryType = string.Empty,
+                Email = string.Empty,
+                Description = string.Empty
+            };
+            while (reader.Read())
+            {
+                company.Id = reader.GetInt32(0);
+                company.Name = reader.GetString(1);
+                company.IndustryType = reader.GetString(2);
+                company.Email = reader.GetString(3);
+                company.Description = reader.GetString(4);
+            }
+            ViewBag.company = company;
+            return View("EditCompany");
+        }
     }
 
 }
