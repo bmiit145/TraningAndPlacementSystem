@@ -36,10 +36,10 @@
                     }
             </div>
             <div class="p-3">
-            <form action="@Url.Action("addCompanySubmit", "Company")" method="post" class="form">
+            <form action="@Url.Action("updateCompanySubmit", "Company")" method="post">
                 <div class="mb-3">
-                    <label for="name" class="form-label">ID</label>
-                    <input type="text" name="name" class="form-control" id="name" placeholder="ID"
+                    <label for="id" class="form-label">ID</label>
+                    <input type="text" name="id" class="form-control" id="id" placeholder="ID"
                     disabled
                         value="@ViewBag.company.Id">
                 </div>
@@ -66,7 +66,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea type="text" name="description" class="form-control" id="description" 
+                    <textarea name="description" class="form-control" id="description-ckeditor" 
                         value="@ViewBag.company.Description"
                     placeholder="Enter Description"
                     >
