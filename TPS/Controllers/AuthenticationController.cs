@@ -143,72 +143,71 @@ namespace TPS.Controllers
             return View();
         }
 
-        public IActionResult ResetLinkSend(string username){
-            if (string.IsNullOrEmpty(username))
-            {
-                ViewBag.Error = "Please enter a username.";
-                return View("PasswordReset");
-            }
+       public IActionResult ResetLinkSend(string username)
+{
+    if (string.IsNullOrEmpty(username))
+    {
+        ViewBag.Error = "Please enter a username.";
+        return View("PasswordReset");
+    }
 
-
-            db.close();
-            db.open();
-            SqlCommand cmd = new SqlCommand("select id, username, role from users where username = @username", db.conn);
-            cmd.Parameters.AddWithValue("@username", username);
-            SqlDataReader dr = cmd.ExecuteReader();
-            if (dr.HasRows)
+    db.open();
+    using (SqlCommand cmd = new SqlCommand("SELECT id, username, role FROM users WHERE username = @username", db.conn))
+    {
+        cmd.Parameters.AddWithValue("@username", username);
+        using (SqlDataReader dr = cmd.ExecuteReader())
+        {
+            if (dr.Read())
             {
-                // get role if role = 1 then error as No admin password reset
-                while (dr.Read())
+                if (dr["role"].ToString() == "1")
                 {
-                    if (dr["role"].ToString() == "1")
-                    {
-                        ViewBag.Error = "Admin password reset is not allowed.";
-                        return View("PasswordReset");
-                    }
-                    String id = dr["id"].ToString();
-                
-                // get email from studentProfile table
-                db.close();
-                db.open();
-                cmd = new SqlCommand("select email from StudentProfile where id = @id", db.conn);
-                cmd.Parameters.AddWithValue("@id", id);
-                dr = cmd.ExecuteReader();
-                if (dr.HasRows)
+                    ViewBag.Error = "Admin password reset is not allowed.";
+                    return View("PasswordReset");
+                }
+                string id = dr["id"].ToString();
+                string username1 = dr["username"].ToString();
+
+                // Close the current reader before opening another one
+                dr.Close();
+
+                using (SqlCommand cmd1 = new SqlCommand("SELECT email FROM StudentProfile WHERE id = @id", db.conn))
                 {
-                    while (dr.Read())
+                    cmd1.Parameters.AddWithValue("@id", id);
+                    using (SqlDataReader dr1 = cmd1.ExecuteReader())
                     {
-                        string email = dr["email"].ToString();
-                        string username1 = dr["username"].ToString();
-                        // genrate token of 32 character
-                        string token = Guid.NewGuid().ToString().Replace("-", "");
-                        string resetUrl = $"{this.Request.Scheme}://{this.Request.Host}/Authentication/PasswordChangeRequest?token={token}&username={username1}";
-                        // save token in database
-                        db.close();
-                        db.open();
-                        SqlCommand cmd1 = new SqlCommand("insert into PasswordResetToken (username , token) values (@username , @token)", db.conn);
-                        cmd1.Parameters.AddWithValue("@username", username1);
-                        cmd1.Parameters.AddWithValue("@token", token);
-                        cmd1.ExecuteNonQuery();
-                        db.close();
-                        SendResetPasswordEmail(email, resetUrl);
+                        if (dr1.Read())
+                        {
+                            string email = dr1["email"].ToString();
+                            // Generate token of 32 characters
+                            string token = Guid.NewGuid().ToString().Replace("-", "");
+                            string resetUrl = $"{this.Request.Scheme}://{this.Request.Host}/Authentication/PasswordChangeRequest?token={token}&username={username1}";
+
+                            dr1.Close();
+                            // Save token in the database
+                            using (SqlCommand cmd2 = new SqlCommand("INSERT INTO PasswordResetToken (username, token) VALUES (@username, @token)", db.conn))
+                            {
+                                cmd2.Parameters.AddWithValue("@username", username1);
+                                cmd2.Parameters.AddWithValue("@token", token);
+                                cmd2.ExecuteNonQuery();
+                            }
+                            SendResetPasswordEmail(email, resetUrl);
+                            ViewBag.Success = "Reset link has been sent to your email.";
+                            return View("PasswordReset");
+                        }
                     }
-                
-                ViewBag.Success = "Reset link has been sent to your email.";
-                return View("PasswordReset");
                 }
-                }
-                
             }
             else
             {
                 ViewBag.Error = "Invalid username.";
                 return View("PasswordReset");
             }
-
-            ViewBag.Error = "Something Wents Wrong!";
-            return View("PasswordReset");
         }
+    }
+
+    ViewBag.Error = "Something went wrong!";
+    return View("PasswordReset");
+}
 
         
 
