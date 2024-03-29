@@ -398,8 +398,33 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
         [ActionName("Profile")]
         public IActionResult Profile()
         {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            string username = session.GetString("username");
+            db.open();
+            SqlCommand cmd = new SqlCommand("select * from StudentProfile where id = (select id from users where username = @username)", db.conn);
+            cmd.Parameters.AddWithValue("@username", username);
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    ViewBag.Username = username;
+                    ViewBag.Firstname = dr["fname"].ToString();
+                    ViewBag.Lastname = dr["lname"].ToString();
+                    ViewBag.Email = dr["email"].ToString();
+                    ViewBag.Contact = dr["contact_no"].ToString();
+                    ViewBag.Enro = dr["enro"].ToString();
+                    ViewBag.CGPA= dr["CGPA"].ToString();
+                }
+            }
             return View();
         }
+
 
         [ActionName("SignUpCover")]
         public IActionResult SignUpCover()

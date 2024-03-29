@@ -64,8 +64,12 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <h5 class="fs-16 mb-1">Anna Adame</h5>
-                                        <p class="text-muted mb-0">Lead Designer / Developer</p>
+                                        <h5 class="fs-16 mb-1">
+                                            @ViewBag.FirstName @ViewBag.Lastname
+                                        </h5>
+                                        <p class="text-muted mb-0">
+                                            @ViewBag.Username
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -89,7 +93,7 @@
                                                 Change Password
                                             </a>
                                         </li>
-                                        <li class="nav-item">
+                                        @* <li class="nav-item">
                                             <a class="nav-link" data-bs-toggle="tab" href="#experience" role="tab">
                                                 <i class="far fa-envelope"></i>
                                                 Experience
@@ -100,7 +104,7 @@
                                                 <i class="far fa-envelope"></i>
                                                 Privacy Policy
                                             </a>
-                                        </li>
+                                        </li> *@
                                     </ul>
                                 </div>
                                 <div class="card-body p-4">
@@ -115,7 +119,8 @@
                                                                 Name
                                                             </label>
                                                             <input type="text" class="form-control" id="firstnameInput"
-                                                                   placeholder="Enter your firstname" value="Dave">
+                                                                    name="first_name"
+                                                                   placeholder="Enter your firstname" value="@ViewBag.FirstName">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
@@ -126,7 +131,8 @@
                                                                 Name
                                                             </label>
                                                             <input type="text" class="form-control" id="lastnameInput"
-                                                                   placeholder="Enter your lastname" value="Adame">
+                                                                    name="last_name"
+                                                                   placeholder="Enter your lastname" value="@ViewBag.Lastname">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
@@ -136,10 +142,12 @@
                                                                 Phone
                                                                 Number
                                                             </label>
-                                                            <input type="text" class="form-control"
+                                                            <input type="text"
+                                                                     name="phone"   
+                                                             class="form-control"
                                                                    id="phonenumberInput"
                                                                    placeholder="Enter your phone number"
-                                                                   value="+(1) 987 6543">
+                                                                   value="@ViewBag.Contact">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
@@ -149,113 +157,25 @@
                                                                 Email
                                                                 Address
                                                             </label>
-                                                            <input type="email" class="form-control" id="emailInput"
+                                                            <input type="email" 
+                                                                name="email"
+                                                            class="form-control" id="emailInput"
                                                                    placeholder="Enter your email"
-                                                                   value="daveadame@velzon.com">
+                                                                   value="@ViewBag.Email">
                                                         </div>
                                                     </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-12">
-                                                        <div class="mb-3">
-                                                            <label for="JoiningdatInput" class="form-label">
-                                                                Joining
-                                                                Date
-                                                            </label>
-                                                            <input type="text" class="form-control"
-                                                                   data-provider="flatpickr" id="JoiningdatInput"
-                                                                   data-date-format="d M, Y"
-                                                                   data-deafult-date="24 Nov, 2021"
-                                                                   placeholder="Select date" />
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-12">
-                                                        <div class="mb-3">
-                                                            <label for="skillsInput" class="form-label">Skills</label>
-                                                            <select class="form-control" name="skillsInput" data-choices
-                                                                    data-choices-removeItem multiple id="skillsInput">
-                                                                <option value="illustrator">Illustrator</option>
-                                                                <option value="photoshop">Photoshop</option>
-                                                                <option value="css">CSS</option>
-                                                                <option value="html">HTML</option>
-                                                                <option value="javascript" selected>Javascript</option>
-                                                                <option value="python">Python</option>
-                                                                <option value="php">PHP</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
                                                     <div class="col-lg-6">
                                                         <div class="mb-3">
-                                                            <label for="designationInput"
-                                                                   class="form-label">Designation</label>
-                                                            <input type="text" class="form-control"
-                                                                   id="designationInput" placeholder="Designation"
-                                                                   value="Lead Designer / Developer">
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="websiteInput1"
-                                                                   class="form-label">Website</label>
-                                                            <input type="text" class="form-control" id="websiteInput1"
-                                                                   placeholder="www.example.com" value="www.velzon.com" />
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-4">
-                                                        <div class="mb-3">
-                                                            <label for="cityInput" class="form-label">City</label>
-                                                            <input type="text" class="form-control" id="cityInput"
-                                                                   placeholder="City" value="California" />
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-4">
-                                                        <div class="mb-3">
-                                                            <label for="countryInput" class="form-label">Country</label>
-                                                            <input type="text" class="form-control" id="countryInput"
-                                                                   placeholder="Country" value="United States" />
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-4">
-                                                        <div class="mb-3">
-                                                            <label for="zipcodeInput" class="form-label">
-                                                                Zip
-                                                                Code
+                                                            <label for="cgpa" class="form-label">
+                                                                CGPA
                                                             </label>
-                                                            <input type="text" class="form-control" minlength="5"
-                                                                   maxlength="6" id="zipcodeInput"
-                                                                   placeholder="Enter zipcode" value="90011">
+                                                            <input type="number" 
+                                                            name="cgpa"
+                                                            class="form-control"
+                                                                   placeholder="Enter your gcgpa"
+                                                                   value="@ViewBag.CGPA">
                                                         </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-12">
-                                                        <div class="mb-3 pb-2">
-                                                            <label for="exampleFormControlTextarea"
-                                                                   class="form-label">Description</label>
-                                                            <textarea class="form-control"
-                                                                      id="exampleFormControlTextarea"
-                                                                      placeholder="Enter your description"
-                                                                      rows="3">Hi I'm Anna Adame,It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is European languages are members of the same family.</textarea>
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-12">
-                                                        <div class="hstack gap-2 justify-content-end">
-                                                            <button type="submit"
-                                                                    class="btn btn-primary">
-                                                                Updates
-                                                            </button>
-                                                            <button type="button"
-                                                                    class="btn btn-soft-success">
-                                                                Cancel
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
+                                                    </div>                
                                                 </div>
                                                 <!--end row-->
                                             </form>
