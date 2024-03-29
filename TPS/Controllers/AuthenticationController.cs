@@ -107,7 +107,7 @@ namespace TPS.Controllers
         }
 
         // code for register and after register redirect to login page
-        public ActionResult registerSubmit(string username, string password)
+        public ActionResult registerSubmit(string username, string password, string first_name, string last_name, string email, string c_no,string e_no)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -121,6 +121,30 @@ namespace TPS.Controllers
             cmd.Parameters.AddWithValue("@password", password);
             cmd.Parameters.AddWithValue("@role", 0);
             cmd.ExecuteNonQuery();
+
+//  get inserted document id
+            SqlCommand cmd1 = new SqlCommand("select id from users where username = @username", db.conn);
+            cmd1.Parameters.AddWithValue("@username", username);
+            SqlDataReader dr = cmd1.ExecuteReader();
+            int id = 0;
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    id = Convert.ToInt32(dr["id"]);
+                }
+            }
+            dr.Close();
+            // now insert student profile
+            SqlCommand cmd2 = new SqlCommand("insert into StudentProfile (id,enro,fname,lname,email,contact_no) values (@id , @enro , @fname , @lname , @email , @contact_no)", db.conn);
+            cmd2.Parameters.AddWithValue("@id", id);
+            cmd2.Parameters.AddWithValue("@enro", e_no);
+            cmd2.Parameters.AddWithValue("@fname", first_name);
+            cmd2.Parameters.AddWithValue("@lname", last_name);
+            cmd2.Parameters.AddWithValue("@email", email);
+            cmd2.Parameters.AddWithValue("@contact_no", c_no);
+            cmd2.ExecuteNonQuery();
+
             db.close();
             return RedirectToAction("SignIn");
         }
