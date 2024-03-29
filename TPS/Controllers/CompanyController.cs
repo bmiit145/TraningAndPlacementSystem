@@ -88,7 +88,7 @@ namespace TPS.Controllers
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
             ViewBag.Message = "Company Deleted Successfully";
-            return RedirectToAction("Index");
+            return View("Index");
         }
     }
 
