@@ -54,7 +54,7 @@ namespace TPS.Controllers
         }
 
 
-        public ActionResult signinSubmit(string username, string password , bool rememberMe = false)
+        public ActionResult signinSubmit(string username, string password, bool rememberMe = false)
         {
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
@@ -79,11 +79,11 @@ namespace TPS.Controllers
                     session.SetString("role", dr["role"].ToString());
 
                     if (rememberMe)
-                        {
-                            // store username and role in cookie for remember me
-                            Response.Cookies.Append("username", dr["username"].ToString());
-                            Response.Cookies.Append("role", dr["role"].ToString());
-                        }
+                    {
+                        // store username and role in cookie for remember me
+                        Response.Cookies.Append("username", dr["username"].ToString());
+                        Response.Cookies.Append("role", dr["role"].ToString());
+                    }
 
 
                     if (dr["role"].ToString() == "1")
@@ -107,7 +107,7 @@ namespace TPS.Controllers
         }
 
         // code for register and after register redirect to login page
-        public ActionResult registerSubmit(string username, string password, string first_name, string last_name, string email, string c_no,string e_no)
+        public ActionResult registerSubmit(string username, string password, string first_name, string last_name, string email, string c_no, string e_no)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
@@ -122,7 +122,7 @@ namespace TPS.Controllers
             cmd.Parameters.AddWithValue("@role", 0);
             cmd.ExecuteNonQuery();
 
-//  get inserted document id
+            //  get inserted document id
             SqlCommand cmd1 = new SqlCommand("select id from users where username = @username", db.conn);
             cmd1.Parameters.AddWithValue("@username", username);
             SqlDataReader dr = cmd1.ExecuteReader();
@@ -167,94 +167,94 @@ namespace TPS.Controllers
             return View();
         }
 
-       public IActionResult ResetLinkSend(string username)
-{
-    if (string.IsNullOrEmpty(username))
-    {
-        ViewBag.Error = "Please enter a username.";
-        return View("PasswordReset");
-    }
-
-    db.open();
-    using (SqlCommand cmd = new SqlCommand("SELECT id, username, role FROM users WHERE username = @username", db.conn))
-    {
-        cmd.Parameters.AddWithValue("@username", username);
-        using (SqlDataReader dr = cmd.ExecuteReader())
+        public IActionResult ResetLinkSend(string username)
         {
-            if (dr.Read())
+            if (string.IsNullOrEmpty(username))
             {
-                if (dr["role"].ToString() == "1")
-                {
-                    ViewBag.Error = "Admin password reset is not allowed.";
-                    return View("PasswordReset");
-                }
-                string id = dr["id"].ToString();
-                string username1 = dr["username"].ToString();
+                ViewBag.Error = "Please enter a username.";
+                return View("PasswordReset");
+            }
 
-                // Close the current reader before opening another one
-                dr.Close();
-
-                using (SqlCommand cmd1 = new SqlCommand("SELECT email FROM StudentProfile WHERE id = @id", db.conn))
+            db.open();
+            using (SqlCommand cmd = new SqlCommand("SELECT id, username, role FROM users WHERE username = @username", db.conn))
+            {
+                cmd.Parameters.AddWithValue("@username", username);
+                using (SqlDataReader dr = cmd.ExecuteReader())
                 {
-                    cmd1.Parameters.AddWithValue("@id", id);
-                    using (SqlDataReader dr1 = cmd1.ExecuteReader())
+                    if (dr.Read())
                     {
-                        if (dr1.Read())
+                        if (dr["role"].ToString() == "1")
                         {
-                            string email = dr1["email"].ToString();
-                            // Generate token of 32 characters
-                            string token = Guid.NewGuid().ToString().Replace("-", "");
-                            string resetUrl = $"{this.Request.Scheme}://{this.Request.Host}/Authentication/PasswordChangeRequest?token={token}&username={username1}";
-
-                            dr1.Close();
-                            // Save token in the database
-                            using (SqlCommand cmd2 = new SqlCommand("INSERT INTO PasswordResetToken (username, token) VALUES (@username, @token)", db.conn))
-                            {
-                                cmd2.Parameters.AddWithValue("@username", username1);
-                                cmd2.Parameters.AddWithValue("@token", token);
-                                cmd2.ExecuteNonQuery();
-                            }
-                            SendResetPasswordEmail(email, resetUrl);
-                            ViewBag.Success = "Reset link has been sent to your email.";
+                            ViewBag.Error = "Admin password reset is not allowed.";
                             return View("PasswordReset");
                         }
+                        string id = dr["id"].ToString();
+                        string username1 = dr["username"].ToString();
+
+                        // Close the current reader before opening another one
+                        dr.Close();
+
+                        using (SqlCommand cmd1 = new SqlCommand("SELECT email FROM StudentProfile WHERE id = @id", db.conn))
+                        {
+                            cmd1.Parameters.AddWithValue("@id", id);
+                            using (SqlDataReader dr1 = cmd1.ExecuteReader())
+                            {
+                                if (dr1.Read())
+                                {
+                                    string email = dr1["email"].ToString();
+                                    // Generate token of 32 characters
+                                    string token = Guid.NewGuid().ToString().Replace("-", "");
+                                    string resetUrl = $"{this.Request.Scheme}://{this.Request.Host}/Authentication/PasswordChangeRequest?token={token}&username={username1}";
+
+                                    dr1.Close();
+                                    // Save token in the database
+                                    using (SqlCommand cmd2 = new SqlCommand("INSERT INTO PasswordResetToken (username, token) VALUES (@username, @token)", db.conn))
+                                    {
+                                        cmd2.Parameters.AddWithValue("@username", username1);
+                                        cmd2.Parameters.AddWithValue("@token", token);
+                                        cmd2.ExecuteNonQuery();
+                                    }
+                                    SendResetPasswordEmail(email, resetUrl);
+                                    ViewBag.Success = "Reset link has been sent to your email.";
+                                    return View("PasswordReset");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.Error = "Invalid username.";
+                        return View("PasswordReset");
                     }
                 }
             }
-            else
-            {
-                ViewBag.Error = "Invalid username.";
-                return View("PasswordReset");
-            }
+
+            ViewBag.Error = "Something went wrong!";
+            return View("PasswordReset");
         }
-    }
 
-    ViewBag.Error = "Something went wrong!";
-    return View("PasswordReset");
-}
 
-        
 
-protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
-    {
-        Console.WriteLine("Sending email to " + recipientEmail);
-        Console.WriteLine("Reset URL: " + resetUrl);
-        using (MailMessage mail = new MailMessage())
+        protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
         {
-            mail.From = new MailAddress("21bmiit145@gmail.com");
-            mail.To.Add(recipientEmail);
-            mail.Subject = "Reset Your Password";
-            mail.Body = $"Please click the following link to reset your password: {resetUrl}";
-
-            using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+            Console.WriteLine("Sending email to " + recipientEmail);
+            Console.WriteLine("Reset URL: " + resetUrl);
+            using (MailMessage mail = new MailMessage())
             {
-                smtp.Port = 587;
-                smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
-                smtp.EnableSsl = true;
-                smtp.Send(mail);
+                mail.From = new MailAddress("21bmiit145@gmail.com");
+                mail.To.Add(recipientEmail);
+                mail.Subject = "Reset Your Password";
+                mail.Body = $"Please click the following link to reset your password: {resetUrl}";
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
             }
         }
-    }
 
 
         [ActionName("PasswordChangeRequest")]
@@ -280,8 +280,9 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             return View("PasswordReset");
         }
 
-         [ActionName("ChangePassword")]   
-         public IActionResult ChangePassword(string old_password , string new_password , string con_password){
+        [ActionName("ChangePassword")]
+        public IActionResult ChangePassword(string old_password, string new_password, string con_password)
+        {
 
             ISession session = HttpContext.Session;
             string username = session.GetString("username");
@@ -293,7 +294,7 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
                 return View("Profile");
             }
 
-            if(String.IsNullOrEmpty(username))
+            if (String.IsNullOrEmpty(username))
             {
                 ViewBag.Error = "Invalid username.";
                 return View("Profile");
@@ -329,21 +330,21 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
                 return View("Profile");
             }
 
-// update password
+            // update password
             db.close();
             db.open();
             SqlCommand cmd = new SqlCommand("update users set password = @password where username = @username", db.conn);
             cmd.Parameters.AddWithValue("@password", new_password);
             cmd.Parameters.AddWithValue("@username", username);
             cmd.ExecuteNonQuery();
-            
+
             ViewBag.Success = "Password has been updated.";
             return View("Profile");
 
-            }
+        }
 
         [ActionName("UpdatePassword")]
-        public IActionResult UpdatePassword(string username, string password , string con_password)
+        public IActionResult UpdatePassword(string username, string password, string con_password)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(con_password))
             {
@@ -351,7 +352,7 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
                 return View("PasswordChange");
             }
 
-            if(String.IsNullOrEmpty(username))
+            if (String.IsNullOrEmpty(username))
             {
                 ViewBag.Error = "Invalid username.";
                 return View("PasswordChange");
@@ -377,7 +378,7 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             db.close();
 
             ViewBag.Success = "Password has been updated.";
-            return RedirectToAction("SignIn" , "Authentication");
+            return RedirectToAction("SignIn", "Authentication");
         }
 
 
@@ -419,10 +420,34 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
                     ViewBag.Email = dr["email"].ToString();
                     ViewBag.Contact = dr["contact_no"].ToString();
                     ViewBag.Enro = dr["enro"].ToString();
-                    ViewBag.CGPA= dr["CGPA"].ToString();
+                    ViewBag.CGPA = dr["CGPA"].ToString();
                 }
             }
             return View();
+        }
+
+        [ActionName("UpdateProfile")]
+        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa)
+        {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            string username = session.GetString("username");
+            db.open();
+            SqlCommand cmd = new SqlCommand("update StudentProfile set fname = @fname , lname = @lname , email = @email , contact_no = @contact_no , CGPA = @CGPA where id = (select id from users where username = @username)", db.conn);
+            cmd.Parameters.AddWithValue("@fname", first_name);
+            cmd.Parameters.AddWithValue("@lname", last_name);
+            cmd.Parameters.AddWithValue("@email", email);
+            cmd.Parameters.AddWithValue("@contact_no", phone);
+            cmd.Parameters.AddWithValue("@CGPA", cgpa);
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.ExecuteNonQuery();
+            // set success message
+            ViewBag.Success = "Profile has been updated.";
+            return RedirectToAction("Profile", "Authentication");
         }
 
 
@@ -463,7 +488,7 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             return View();
         }
 
-        
+
         [ActionName("SuccessMessageBasic")]
         public IActionResult SuccessMessageBasic()
         {

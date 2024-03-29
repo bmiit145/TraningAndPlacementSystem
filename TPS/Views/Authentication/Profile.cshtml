@@ -29,7 +29,7 @@
                     <div class="position-relative mx-n4 mt-n4">
                         <div class="profile-wid-bg profile-setting-img">
                             <img src="~/assets/images/profile-bg.jpg" class="profile-wid-img" alt="">
-                            <div class="overlay-content">
+                            @* <div class="overlay-content">
                                 <div class="text-end p-3">
                                     <div class="p-0 ms-auto rounded-circle profile-photo-edit">
                                         <input id="profile-foreground-img-file-input" type="file"
@@ -39,8 +39,8 @@
                                             <i class="ri-image-edit-line align-bottom me-1"></i> Change Cover
                                         </label>
                                     </div>
-                                </div>
-                            </div>
+                                </div> 
+                            </div> *@
                         </div>
                     </div>
 
@@ -53,7 +53,7 @@
                                             <img src="~/assets/images/users/avatar-1.jpg"
                                                  class="rounded-circle avatar-xl img-thumbnail user-profile-image  shadow"
                                                  alt="user-profile-image">
-                                            <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
+                                            @* <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
                                                 <input id="profile-img-file-input" type="file"
                                                        class="profile-img-file-input">
                                                 <label for="profile-img-file-input"
@@ -62,7 +62,7 @@
                                                         <i class="ri-camera-fill"></i>
                                                     </span>
                                                 </label>
-                                            </div>
+                                            </div> *@
                                         </div>
                                         <h5 class="fs-16 mb-1">
                                             @ViewBag.FirstName @ViewBag.Lastname
@@ -110,15 +110,15 @@
                                 <div class="card-body p-4">
                                     <div class="tab-content">
                                         <div class="tab-pane active" id="personalDetails" role="tabpanel">
-                                            <form action="javascript:void(0);">
+                                            <form action="@Url.Action("UpdateProfile", "Authentication")" method="post">
                                                 <div class="row">
                                                     <div class="col-lg-6">
                                                         <div class="mb-3">
-                                                            <label for="firstnameInput" class="form-label">
+                                                            <label for="first_name" class="form-label">
                                                                 First
                                                                 Name
                                                             </label>
-                                                            <input type="text" class="form-control" id="firstnameInput"
+                                                            <input type="text" class="form-control" id="first_name"
                                                                     name="first_name"
                                                                    placeholder="Enter your firstname" value="@ViewBag.FirstName">
                                                         </div>
