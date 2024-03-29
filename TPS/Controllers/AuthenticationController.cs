@@ -256,6 +256,43 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             return View("PasswordReset");
         }
 
+         [ActionName("ChangePassword")]   
+         public IActionResult ChangePassword(string old_password , string new_password , string con_password){
+
+            ISession session = HttpContext.Session;
+            string username = session.GetString("username");
+
+
+                        if (string.IsNullOrEmpty(new_password) || string.IsNullOrEmpty(con_password))
+            {
+                ViewBag.Error = "Please enter a password and confirm password.";
+                return View("PasswordChange");
+            }
+
+            if(String.IsNullOrEmpty(username))
+            {
+                ViewBag.Error = "Invalid username.";
+                return View("PasswordChange");
+            }
+
+            if (new_password != con_password)
+            {
+                ViewBag.Error = "Password and confirm password do not match.";
+                return View("PasswordChange");
+            }
+
+            db.close();
+            db.open();
+            SqlCommand cmd = new SqlCommand("update users set password = @password where username = @username", db.conn);
+            cmd.Parameters.AddWithValue("@password", new_password);
+            cmd.Parameters.AddWithValue("@username", username);
+            cmd.ExecuteNonQuery();
+            
+            ViewBag.Success = "Password has been updated.";
+            return RedirectToAction("SignIn" , "Authentication");
+
+                  }
+
         [ActionName("UpdatePassword")]
         public IActionResult UpdatePassword(string username, string password , string con_password)
         {
@@ -293,6 +330,8 @@ protected void SendResetPasswordEmail(string recipientEmail, string resetUrl)
             ViewBag.Success = "Password has been updated.";
             return RedirectToAction("SignIn" , "Authentication");
         }
+
+
 
         [ActionName("Offline")]
         public ActionResult Offline()

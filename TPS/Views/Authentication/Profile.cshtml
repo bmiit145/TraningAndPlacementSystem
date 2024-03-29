@@ -254,7 +254,7 @@
                                         </div>
                                         <!--end tab-pane-->
                                         <div class="tab-pane" id="changePassword" role="tabpanel">
-                                            <form action="javascript:void(0);">
+                                            <form action='@Url.Action("ChangePassword", "Authentication")' method="post">
                                                 <div class="row g-2">
                                                     <div class="col-lg-4">
                                                         <div>
@@ -264,6 +264,7 @@
                                                             </label>
                                                             <input type="password" class="form-control"
                                                                    id="oldpasswordInput"
+                                                                   name = "old_password"
                                                                    placeholder="Enter current password">
                                                         </div>
                                                     </div>
@@ -275,6 +276,7 @@
                                                                 Password*
                                                             </label>
                                                             <input type="password" class="form-control"
+                                                            name="new_password"
                                                                    id="newpasswordInput" placeholder="Enter new password">
                                                         </div>
                                                     </div>
@@ -287,13 +289,14 @@
                                                             </label>
                                                             <input type="password" class="form-control"
                                                                    id="confirmpasswordInput"
+                                                                   name="con_password"
                                                                    placeholder="Confirm password">
                                                         </div>
                                                     </div>
                                                     <!--end col-->
                                                     <div class="col-lg-12">
                                                         <div class="mb-3">
-                                                            <a href="javascript:void(0);"
+                                                            <a href='@Url.Action("PasswordReset", "Authentication")'
                                                                class="link-primary text-decoration-underline">
                                                                 Forgot
                                                                 Password ?
