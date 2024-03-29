@@ -3,6 +3,8 @@
     ViewBag.pTitle = "Dashboard";
     ViewBag.pageTitle = "Dashboards";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
 }
 
 @section styles{
@@ -18,7 +20,7 @@
     <div class="col-12">
         <div class="alert alert-primary" role="alert">
             <div class="alert-message">
-                <strong>Welcome!</strong> 
+                <strong>Welcome!</strong> @session.GetString("username")
             </div>
         </div>
         </div>
