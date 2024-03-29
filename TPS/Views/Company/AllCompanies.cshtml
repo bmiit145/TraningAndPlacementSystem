@@ -13,8 +13,14 @@
 
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
 }
-
-
+@* check that there is a message *@
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @ViewBag.Message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card">
@@ -86,10 +92,18 @@
                                                             <ul class="dropdown-menu dropdown-menu-end">
                                                                 <li><a href="#!" class="dropdown-item"><i class="ri-eye-fill align-bottom me-2 text-muted"></i>View</a></li>
                                                                 <li><a class="dropdown-item edit-item-btn"><i class="ri-pencil-fill align-bottom me-2 text-muted"></i> Edit</a></li>
-                                                                <li>
+                                                                @* <li>
                                                                     <a class="dropdown-item remove-item-btn">
                                                                         <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Delete
                                                                     </a>
+                                                                </li> *@
+                                                                <li>
+                                                                    <form method="post" action="@Url.Action("deleteCompany", "Company")">
+                                                                        <input type="hidden" name="id" value="@company.Id" />
+                                                                        <button type="submit" class="dropdown-item remove-item-btn">
+                                                                            <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i> Delete
+                                                                        </button>
+                                                                    </form>
                                                                 </li>
                                                             </ul>
                                                         </div>

@@ -74,6 +74,22 @@ namespace TPS.Controllers
             ViewBag.Message = "Company Added Successfully";
             return RedirectToAction("Index");
         }
+
+        public ActionResult deleteCompany(int id)
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            //delete company from database
+            SqlCommand cmd = new SqlCommand("DELETE FROM CompanyProfile WHERE company_id=@id", db.conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+            ViewBag.Message = "Company Deleted Successfully";
+            return RedirectToAction("Index");
+        }
     }
 
 }
