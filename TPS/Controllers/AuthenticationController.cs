@@ -109,9 +109,9 @@ namespace TPS.Controllers
         // code for register and after register redirect to login page
         public ActionResult registerSubmit(string username, string password, string first_name, string last_name, string email, string c_no, string e_no)
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(first_name) || string.IsNullOrEmpty(last_name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(c_no) || string.IsNullOrEmpty(e_no))
             {
-                ViewBag.Error = "Please enter a username and password.";
+                ViewBag.Error = "Please fillup All the Details !";
                 return View("SignUp");
             }
 
@@ -288,6 +288,12 @@ namespace TPS.Controllers
             string username = session.GetString("username");
 
 
+            if (string.IsNullOrEmpty(old_password))
+            {
+                ViewBag.Error = "Please enter a Old password.";
+                return View("Profile");
+            }
+
             if (string.IsNullOrEmpty(new_password) || string.IsNullOrEmpty(con_password))
             {
                 ViewBag.Error = "Please enter a password and confirm password.";
@@ -346,6 +352,11 @@ namespace TPS.Controllers
         [ActionName("UpdatePassword")]
         public IActionResult UpdatePassword(string username, string password, string con_password)
         {
+            if(string.IsNullOrEmpty(username))
+            {
+                ViewBag.Error = "Unauthorised Access!";
+                return View("PasswordChange");
+            }
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(con_password))
             {
                 ViewBag.Error = "Please enter a password and confirm password.";
