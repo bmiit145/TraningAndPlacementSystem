@@ -1,0 +1,97 @@
+@{
+    ViewBag.Title = "Edit Company";
+    ViewBag.pTitle = "Edit Company";
+    ViewBag.pageTitle = "Edit Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+<head>
+    @Html.Partial("~/Views/Shared/_title_meta.cshtml")
+    @Html.Partial("~/Views/Shared/_head_css.cshtml")
+
+    <!-- Include jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Include CSS for toast notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+
+</head>
+<body>
+<div class="row">
+    <div class="col-md-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    Edit Company for @ViewBag.company.Name
+                </h4>
+            </div>
+            <div class="card-body">
+                    @if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    <p>@ViewBag.Error</p>
+                                </div>
+                    }
+            </div>
+            <div class="p-3">
+            <form action="@Url.Action("updateCompanySubmit", "Company")" method="post">
+                <div class="mb-3">
+                    <label for="id" class="form-label">ID</label>
+                    <input type="text" name="id" class="form-control" id="id" placeholder="ID"
+                    disabled
+                        value="@ViewBag.company.Id">
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter Name of Company"
+                        value="@ViewBag.company.Name">
+                </div>
+                <div class="mb-3">
+                    <label for="i_type" class="form-label">
+                        Industry Type
+                    </label>
+                    <input type="text" name="i_type" class="form-control" id="i_type" 
+                        value="@ViewBag.company.IndustryType"
+                    placeholder="Enter Industry Type">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">
+                        Email
+                    </label>
+                    <input type="email" name="email" class="form-control" id="email" 
+                        value="@ViewBag.company.Email"
+                    placeholder="Enter Email">
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" class="form-control" id="description-ckeditor" 
+                        value="@ViewBag.company.Description"
+                    placeholder="Enter Description"
+                    >
+                    </textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+    @Html.Partial("~/Views/Shared/_vendor_scripts.cshtml")
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+    <script>
+        // Check if ViewBag.Error is present and show toast message
+        $(document).ready(function(){
+            var error = "@(ViewBag.Error)";
+            if (error) {
+                toastr.error(error);
+        @(ViewBag.Error = null)
+            }
+        });
+    </script>
+</body>
+</html>
