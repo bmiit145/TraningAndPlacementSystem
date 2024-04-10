@@ -27,14 +27,14 @@
             </div>
             <div class="card-body">
                     @if (ViewBag.Error != null)
-                            {
-                                <div class="alert alert-danger" role="alert">
-                                    <p>@ViewBag.Error</p>
-                                </div>
+                    {
+                                            <div class="alert alert-danger" role="alert">
+                                                <p>@ViewBag.Error</p>
+                                            </div>
                     }
             </div>
             <div class="p-3">
-            <form action="@Url.Action("addCompanySubmit", "Company")" method="post" class="form">
+            <form action="@Url.Action("addCompanySubmit", "Company")" method="post" class="form" onSubmit="validateFields()">
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
                     <input type="text" name="name" class="form-control" id="name" placeholder="Enter Name of Company">
@@ -76,6 +76,16 @@
         @(ViewBag.Error = null)
             }
         });
+        @* check if any message is in the ViewBag *@
+        $(document).ready(function(){
+            var message = "@(ViewBag.Message)";
+            if (message) {
+                toastr.info(message);
+        @(ViewBag.Message = null)
+            }
+        });
+        
+
     </script>
 </body>
 </html>

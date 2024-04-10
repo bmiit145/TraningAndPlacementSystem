@@ -35,7 +35,6 @@ namespace TPS.Controllers
             {
                 open();
 
-
                 SqlCommand checkCmd = new SqlCommand("SELECT COUNT(*) FROM users WHERE Username = @Username", conn);
                 checkCmd.Parameters.AddWithValue("@Username", username);
                 int existingUserCount = (int)checkCmd.ExecuteScalar();

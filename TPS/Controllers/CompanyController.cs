@@ -7,6 +7,8 @@ using System.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using TPS.Models;
+using TPS.Validation;
+using System.ComponentModel;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -62,6 +64,34 @@ namespace TPS.Controllers
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
+            }
+            // if all fields are empty then return to add company page
+            if (name == null || i_type == null || email == null || description == null)
+            {
+                ViewBag.Message = "All Fields are Required";
+                return View("AddCompany");
+            }
+            // check the all the fields are valid or not
+            CompanyValidation companyValidation = new CompanyValidation();
+            if (!companyValidation.ValidateName(name) || name.Length < 3 || name.Length > 50)
+            {
+                ViewBag.Message = "Invalid Name";
+                return View("AddCompany");
+            }
+            if (!companyValidation.ValidateEmail(email) || email.Length < 3 || email.Length > 50)
+            {
+                ViewBag.Message = "Invalid Email";
+                return View("AddCompany");
+            }
+            if (!companyValidation.ValidateCompanySector(i_type) || i_type.Length < 3 || i_type.Length > 50)
+            {
+                ViewBag.Message = "Invalid Industry Type";
+                return View("AddCompany");
+            }
+            if (!companyValidation.ValidateCompanyDescription(description) || description.Length < 10 || description.Length > 100)
+            {
+                ViewBag.Message = "Invalid Description";
+                return View("AddCompany");
             }
             db.open();
             //add company to database
