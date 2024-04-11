@@ -239,8 +239,8 @@ namespace TPS.Controllers
       ,[interview_time]
       ,[venue]
   FROM [dbo].[Interview] */
-            // write a join that get interview_id, company name, hiring program name, interview date, interview time, venue
-            SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id", db.conn);
+            // write a join that get interview_id,company_hiring_id, company name, hiring program name, interview date, interview time, venue
+            SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id", db.conn);
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
             List<Interview> interviews = new List<Interview>();
             while (sqlDataReader.Read())
@@ -253,7 +253,8 @@ namespace TPS.Controllers
                     Hiring_name = sqlDataReader.GetString(2),
                     Interview_date = DateOnly.FromDateTime(sqlDataReader.GetDateTime(3)),
                     Interview_time = sqlDataReader.GetTimeSpan(4),
-                    Venue = sqlDataReader.GetString(5)
+                    Venue = sqlDataReader.GetString(5),
+                    Company_hiring_id = sqlDataReader.GetInt32(6)
                 };
                 interviews.Add(interview);
             }
@@ -331,6 +332,7 @@ namespace TPS.Controllers
             public DateOnly Interview_date { get; set; }
             public TimeSpan Interview_time { get; set; }
             public string Venue { get; set; }
+            public int Company_hiring_id { get; set; }
         }
     }
 }
