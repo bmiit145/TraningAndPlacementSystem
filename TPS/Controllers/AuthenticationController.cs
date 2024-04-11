@@ -168,6 +168,117 @@ namespace TPS.Controllers
             return View();
         }
 
+        [ActionName("ApproveStudent")]
+        public IActionResult ApproveStudent(int id)
+        {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            // check that user is admin or not
+            if (session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand cmd = new SqlCommand("update StudentProfile set is_approved = 1 where id = @id", db.conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+            return RedirectToAction("StudentList");
+        }
+
+        [ActionName("RejectStudent")]
+        public IActionResult RejectStudent(int id)
+        {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            // check that user is admin or not
+            if (session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand cmd = new SqlCommand("update StudentProfile set is_approved = 2 where id = @id", db.conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+            return RedirectToAction("StudentList");
+        }
+
+        [ActionName("DeleteStudent")]
+        public IActionResult DeleteStudent(int id)
+        {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            // check that user is admin or not
+            if (session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand cmd = new SqlCommand("delete from StudentProfile where id = @id", db.conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            // also delete user
+
+            SqlCommand cmd1 = new SqlCommand("delete from users where id = @id", db.conn);
+            cmd1.Parameters.AddWithValue("@id", id);
+
+            cmd.ExecuteNonQuery();
+            cmd1.ExecuteNonQuery();
+
+            return RedirectToAction("StudentList");
+        }
+
+        [ActionName("StudentList")]
+        public IActionResult StudentList()
+        {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            // check that user is admin or not
+            if (session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand cmd = new SqlCommand("select * from StudentProfile", db.conn);
+            SqlDataReader dr = cmd.ExecuteReader();
+            List<Student> students = new List<Student>();
+            while (dr.Read())
+            {
+                Student student = new Student()
+                {
+                    Id = Convert.ToInt32(dr["id"]),
+                    Enro = dr["enro"].ToString(),
+                    Fname = dr["fname"].ToString(),
+                    Lname = dr["lname"].ToString(),
+                    Email = dr["email"].ToString(),
+                    Contact = dr["contact_no"].ToString(),
+                    CGPA = dr["CGPA"].ToString(),
+                    Marks9 = dr["marks9"].ToString(),
+                    Marks10 = dr["marks10"].ToString(),
+                    Marks11 = dr["marks11"].ToString(),
+                    Marks12 = dr["marks12"].ToString(),
+                    IsApproved = dr["is_approved"].ToString()
+                };
+                students.Add(student);
+            }
+            ViewBag.Students = students;
+            return View();
+        }
+
         public IActionResult ResetLinkSend(string username)
         {
             if (string.IsNullOrEmpty(username))
@@ -562,5 +673,21 @@ namespace TPS.Controllers
         {
             return View();
         }
+    }
+
+    internal class Student
+    {
+        public int Id { get; set; }
+        public string Enro { get; set; }
+        public string Fname { get; set; }
+        public string Lname { get; set; }
+        public string Email { get; set; }
+        public string Contact { get; set; }
+        public string CGPA { get; set; }
+        public string Marks9 { get; set; }
+        public string Marks10 { get; set; }
+        public string Marks11 { get; set; }
+        public string Marks12 { get; set; }
+        public string IsApproved { get; set; }
     }
 }
