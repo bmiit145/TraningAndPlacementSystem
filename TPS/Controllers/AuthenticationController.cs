@@ -450,6 +450,12 @@ namespace TPS.Controllers
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
+            // check that fields are not empty
+            // if (string.IsNullOrEmpty(first_name) || string.IsNullOrEmpty(last_name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(cgpa) || string.IsNullOrEmpty(marks9) || string.IsNullOrEmpty(marks10) || string.IsNullOrEmpty(marks11) || string.IsNullOrEmpty(marks12))
+            // {
+            //     ViewBag.Error = "Please fillup all the details.";
+            //     return View("Profile");
+            // }
             string username = session.GetString("username");
             db.open();
             SqlCommand cmd = new SqlCommand("update StudentProfile set fname = @fname , lname = @lname , email = @email , contact_no = @contact_no , CGPA = @CGPA, marks9 = @marks9, marks10 = @marks10, marks11 = @marks11, marks12 = @marks12 where id = (select id from users where username = @username)", db.conn);
@@ -555,7 +561,5 @@ namespace TPS.Controllers
         {
             return View();
         }
-
-
     }
 }
