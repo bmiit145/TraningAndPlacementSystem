@@ -432,13 +432,17 @@ namespace TPS.Controllers
                     ViewBag.Contact = dr["contact_no"].ToString();
                     ViewBag.Enro = dr["enro"].ToString();
                     ViewBag.CGPA = dr["CGPA"].ToString();
+                    ViewBag.MARKS9 = dr["MARKS9"].ToString();
+                    ViewBag.MARKS10 = dr["MARKS10"].ToString();
+                    ViewBag.MARKS11 = dr["MARKS11"].ToString();
+                    ViewBag.MARKS12 = dr["MARKS12"].ToString();
                 }
             }
             return View();
         }
 
         [ActionName("UpdateProfile")]
-        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa)
+        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa, string marks9, string marks10, string marks11, string marks12)
         {
             // check that user is logged in or not
             ISession session = HttpContext.Session;
@@ -448,13 +452,17 @@ namespace TPS.Controllers
             }
             string username = session.GetString("username");
             db.open();
-            SqlCommand cmd = new SqlCommand("update StudentProfile set fname = @fname , lname = @lname , email = @email , contact_no = @contact_no , CGPA = @CGPA where id = (select id from users where username = @username)", db.conn);
+            SqlCommand cmd = new SqlCommand("update StudentProfile set fname = @fname , lname = @lname , email = @email , contact_no = @contact_no , CGPA = @CGPA, marks9 = @marks9, marks10 = @marks10, marks11 = @marks11, marks12 = @marks12 where id = (select id from users where username = @username)", db.conn);
             cmd.Parameters.AddWithValue("@fname", first_name);
             cmd.Parameters.AddWithValue("@lname", last_name);
             cmd.Parameters.AddWithValue("@email", email);
             cmd.Parameters.AddWithValue("@contact_no", phone);
             cmd.Parameters.AddWithValue("@CGPA", cgpa);
             cmd.Parameters.AddWithValue("@username", username);
+            cmd.Parameters.AddWithValue("@marks9", marks9);
+            cmd.Parameters.AddWithValue("@marks10", marks10);
+            cmd.Parameters.AddWithValue("@marks11", marks11);
+            cmd.Parameters.AddWithValue("@marks12", marks12);
             cmd.ExecuteNonQuery();
             // set success message
             ViewBag.Success = "Profile has been updated.";

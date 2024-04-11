@@ -10,7 +10,6 @@ using TPS.Models;
 using TPS.Validation;
 using System.ComponentModel;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TPS.Controllers
 {
@@ -21,12 +20,12 @@ namespace TPS.Controllers
         [ActionName("Index")]
         public IActionResult Index()
         {
-            // if session is not available then redirect to signin page
+            
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
-            // get all companies from database and send to view
+            
             db.open();
             SqlCommand cmd = new SqlCommand("SELECT * FROM CompanyProfile", db.conn);
             SqlDataReader reader = cmd.ExecuteReader();
@@ -50,7 +49,7 @@ namespace TPS.Controllers
         [ActionName("addCompany")]
         public ActionResult addCompany()
         {
-            // if session is not available then redirect to signin page
+            
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
@@ -60,18 +59,18 @@ namespace TPS.Controllers
 
         public ActionResult addCompanySubmit(string name,string i_type,string email,string description)
         {
-            // if session is not available then redirect to signin page
+            
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
-            // if all fields are empty then return to add company page
+            
             if (name == null || i_type == null || email == null || description == null)
             {
                 ViewBag.Message = "All Fields are Required";
                 return View("AddCompany");
             }
-            // check the all the fields are valid or not
+            
             CompanyValidation companyValidation = new CompanyValidation();
             if (!companyValidation.ValidateName(name) || name.Length < 3 || name.Length > 50)
             {
@@ -94,7 +93,7 @@ namespace TPS.Controllers
                 return View("AddCompany");
             }
             db.open();
-            //add company to database
+            
             SqlCommand cmd = new SqlCommand("INSERT INTO CompanyProfile(company_name,industry_type,email,company_description) VALUES(@name,@i_type,@email,@description)",db.conn);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@i_type", i_type);
@@ -107,13 +106,13 @@ namespace TPS.Controllers
 
         public ActionResult deleteCompany(int id)
         {
-            // if session is not available then redirect to signin page
+            
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
             db.open();
-            //delete company from database
+            
             SqlCommand cmd = new SqlCommand("DELETE FROM CompanyProfile WHERE company_id=@id", db.conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
@@ -124,13 +123,13 @@ namespace TPS.Controllers
         [ActionName("editCompany")]
         public ActionResult editCompany(int id)
         {
-            // if session is not available then redirect to signin page
+            
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
             db.open();
-            //get company from database
+            
             SqlCommand cmd = new SqlCommand("SELECT * FROM CompanyProfile WHERE company_id=@id", db.conn);
             cmd.Parameters.AddWithValue("@id", id);
             SqlDataReader reader = cmd.ExecuteReader();
@@ -156,13 +155,13 @@ namespace TPS.Controllers
         [ActionName("updateCompanySubmit")]
         public ActionResult updateCompanySubmit(string id,string name,string i_type,string email,string description)
         {
-            // if session is not available then redirect to signin page
+            
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
             db.open();
-            //update company in database
+            
             SqlCommand cmd = new SqlCommand("UPDATE CompanyProfile SET company_name=@name,industry_type=@i_type,email=@email,company_description=@description WHERE company_id=@id", db.conn);
             cmd.Parameters.AddWithValue("@id", Convert.ToInt32(id));
             cmd.Parameters.AddWithValue("@name", name);
