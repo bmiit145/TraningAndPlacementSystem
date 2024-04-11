@@ -143,6 +143,7 @@ namespace TPS.Controllers
             cmd2.Parameters.AddWithValue("@lname", last_name);
             cmd2.Parameters.AddWithValue("@email", email);
             cmd2.Parameters.AddWithValue("@contact_no", c_no);
+            cmd2.Parameters.AddWithValue("@is_approved", 0);
             cmd2.ExecuteNonQuery();
 
             db.close();
