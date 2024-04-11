@@ -8,6 +8,6 @@ namespace TPS.Models
         {
         }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Hiring> Users { get; set; }
     }
 }
