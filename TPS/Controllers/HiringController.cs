@@ -33,7 +33,7 @@ namespace TPS.Controllers
             {
                 Course course = new()
                 {
-                    Id = reader.GetInt32(0),
+                    ID = reader.GetInt32(0),
                     Name = reader.GetString(1),
                     Description = reader.GetString(2),
                 };
@@ -112,13 +112,6 @@ namespace TPS.Controllers
             return RedirectToAction("Index");
         }
 
-    }
-
-    internal class Course
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
     }
 }
 
