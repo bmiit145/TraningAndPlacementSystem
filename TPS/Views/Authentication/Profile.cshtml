@@ -305,8 +305,8 @@
                     toastr.error("Phone number should contain only 10 digits");
                     return;
                 }
-                if (cgpa > 10) {
-                    toastr.error("CGPA should be under 10");
+                if (cgpa >= 10) {
+                    toastr.error("CGPA should be under or equal to 10");
                     return;
                 }
                 const marksRegex = /^[0-9]{1,3}$/;
