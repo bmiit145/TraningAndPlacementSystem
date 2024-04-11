@@ -1,4 +1,10 @@
-﻿<header id="page-topbar">
+﻿
+@{
+    Layout = null;
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+<header id="page-topbar">
     <div class="layout-width">
         <div class="navbar-header">
             <div class="d-flex">
@@ -152,8 +158,20 @@
                             <img class="rounded-circle header-profile-user" src="~/assets/images/users/avatar-1.jpg"
                                 alt="Header Avatar">
                             <span class="text-start ms-xl-2">
-                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">Anna Adame</span>
-                                <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">Founder</span>
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
+                                    @* get username from session *@
+                                    @session.GetString("username")
+                                </span>
+                                <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
+                                    @if (session.GetString("role") == "1")
+                                    {
+                                        <span>Admin</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Student</span>
+                                    }
+                                </span>
                             </span>
                         </span>
                     </button>
