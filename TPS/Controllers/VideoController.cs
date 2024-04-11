@@ -57,6 +57,7 @@ namespace TPS.Controllers
                 return RedirectToAction("SignIn", "Authentication");
             }
 
+            ViewBag.Courses = Course.GetCourses();
             return View("playlist");
         }
 
