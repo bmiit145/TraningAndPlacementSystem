@@ -223,6 +223,115 @@ namespace TPS.Controllers
             command.ExecuteNonQuery();
             return RedirectToAction("CompanyHiring");
         }
+
+        // all Interview
+        [ActionName("AllInterview")]
+        public IActionResult AllInterview()
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            /*SELECT TOP (1000) [interview_id]
+      ,[company_hiring_id]
+      ,[interview_date]
+      ,[interview_time]
+      ,[venue]
+  FROM [dbo].[Interview] */
+            // write a join that get interview_id, company name, hiring program name, interview date, interview time, venue
+            SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id", db.conn);
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            List<Interview> interviews = new List<Interview>();
+            while (sqlDataReader.Read())
+            {
+                Interview interview = new()
+                {
+                    Id = sqlDataReader.GetInt32(0),
+                    Company_id = sqlDataReader.GetInt32(1),
+                    Company_name = sqlDataReader.GetString(2),
+                    Hiring_name = sqlDataReader.GetString(2),
+                    Interview_date = DateOnly.FromDateTime(sqlDataReader.GetDateTime(3)),
+                    Interview_time = sqlDataReader.GetTimeSpan(4),
+                    Venue = sqlDataReader.GetString(5)
+                };
+                interviews.Add(interview);
+            }
+            ViewBag.Interviews = interviews;
+            sqlDataReader.Close();
+            // get company name and hiring program name from company hiring so that we can show it in the dropdown so we need to join company hiring and company profile and hiring program
+            SqlCommand command = new SqlCommand("SELECT ch.id,c.company_name,hp.program_name FROM dbo.CompanyHiring ch INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id", db.conn);
+            SqlDataReader reader = command.ExecuteReader();
+            List<CompanyHiring> companyHirings = new List<CompanyHiring>();
+            while (reader.Read())
+            {
+                CompanyHiring companyHiring = new()
+                {
+                    Id = reader.GetInt32(0),
+                    Company_name = reader.GetString(1),
+                    Hiring_name = reader.GetString(2)
+                };
+                companyHirings.Add(companyHiring);
+            }
+            ViewBag.CompanyHirings = companyHirings;
+            reader.Close();
+            return View("AllInterview");
+        }
+        // addInterview
+        public ActionResult addInterview(int company_hiring_id, DateTime interview_date, DateTime interview_time, string venue, string id, string edit)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            if (edit == "true")
+            {
+                SqlCommand command = new SqlCommand("UPDATE Interview SET company_hiring_id = @company_hiring_id , interview_date = @interview_date , interview_time = @interview_time , venue = @venue WHERE interview_id = @id", db.conn);
+                command.Parameters.AddWithValue("@company_hiring_id", company_hiring_id);
+                command.Parameters.AddWithValue("@interview_date", interview_date);
+                command.Parameters.AddWithValue("@interview_time", interview_time);
+                command.Parameters.AddWithValue("@venue", venue);
+                command.Parameters.AddWithValue("@id", id);
+                command.ExecuteNonQuery();
+                return RedirectToAction("AllInterview");
+            }
+            else
+            {
+                SqlCommand command = new SqlCommand("INSERT INTO Interview (company_hiring_id,interview_date,interview_time,venue) VALUES (@company_hiring_id,@interview_date,@interview_time,@venue)", db.conn);
+                command.Parameters.AddWithValue("@company_hiring_id", company_hiring_id);
+                command.Parameters.AddWithValue("@interview_date", interview_date);
+                command.Parameters.AddWithValue("@interview_time", interview_time);
+                command.Parameters.AddWithValue("@venue", venue);
+                command.ExecuteNonQuery();
+                return RedirectToAction("AllInterview");
+            }
+        }
+        // deleteInterview
+        [ActionName("deleteInterview")]
+        public IActionResult deleteInterview(string id)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand command = new SqlCommand("DELETE FROM Interview WHERE interview_id = @id", db.conn);
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
+            return RedirectToAction("AllInterview");
+        }
+
+        internal class Interview
+        {
+            public int Id { get; set; }
+            public int Company_id { get; set; }
+            public string Company_name { get; set; }
+            public string Hiring_name { get; set; }
+            public DateOnly Interview_date { get; set; }
+            public TimeSpan Interview_time { get; set; }
+            public string Venue { get; set; }
+        }
     }
 }
 
