@@ -1,0 +1,79 @@
+@{
+    ViewBag.Title = "Playlist | Training And Placement Cell";
+    ViewBag.pTitle = "Dashboard";
+    ViewBag.pageTitle = "Playlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+
+@section styles{
+    <!-- jsvectormap css -->
+    <link href="~/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+
+    <!--Swiper slider css-->
+    <link href="~/assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="row">
+    <div class="col-md-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Add Company</h4>
+            </div>
+            <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                                            <div class="alert alert-danger" role="alert">
+                                                <p>@ViewBag.Error</p>
+                                            </div>
+                    }
+            </div>
+            <div class="p-3">
+            <form action="@Url.Action("addCompanySubmit", "Company")" method="post" class="form" onSubmit="validateFields()">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter Name of Company">
+                </div>
+                <div class="mb-3">
+                    <label for="i_type" class="form-label">
+                        Industry Type
+                    </label>
+                    <input type="text" name="i_type" class="form-control" id="i_type" placeholder="Enter Industry Type">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">
+                        Email
+                    </label>
+                    <input type="email" name="email" class="form-control" id="email" placeholder="Enter Email">
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" class="form-control" id="description" placeholder="Enter Description">
+                    </textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            </div>
+        </div>
+
+    </div>
+</div>  
+
+@section scripts{
+    <!-- apexcharts -->
+    <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Vector map-->
+    <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+    <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+    <!--Swiper slider js-->
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Dashboard init -->
+    <script src="~/assets/js/pages/dashboard-ecommerce.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+}

@@ -1,4 +1,11 @@
-﻿<!-- ========== App Menu ========== -->
+﻿
+@{
+    ViewBag.Title = "Training And Placement Cell";
+    Layout = null;
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+<!-- ========== App Menu ========== -->
 <div class="app-menu navbar-menu">
     <!-- LOGO -->
     <div class="navbar-brand-box">
@@ -33,12 +40,66 @@
             <ul class="navbar-nav" id="navbar-nav">
                 <li class="menu-title"><span data-key="t-menu">Home</span></li>
 
-                 <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link menu-link" href="@Url.Action("SignIn", "Authentication")">
                         <i class="mdi mdi-speedometer"></i> <span data-key="t-dashboards">Dashboard</span>
                     </a>
                 </li>
+                <!-- Admin sidebar -->
+                @if (session.GetString("role") != "0")
+                {
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button"
+                           aria-expanded="false" aria-controls="sidebarDashboards">
+                            <i class="mdi mdi-view-dashboard"></i>
+                            <span data-key="t-company">Company</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarDashboards">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index", "Company")" class="nav-link" data-key="t-analytics">
+                                        View Company
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("AddCompany", "Company")" class="nav-link" data-key="t-crm">
+                                        Add Company
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="@Url.Action("SignIn", "Authentication")">
+                            <i class="mdi mdi-speedometer"></i> <span data-key="t-dashboards">Courses</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarVideo" data-bs-toggle="collapse" role="button"
+                           aria-expanded="false" aria-controls="sidebarVideo">
+                            <i class="mdi mdi-view-dashboard"></i>
+                            <span data-key="t-company">Videos</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarVideo">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("VideoList", "Video")" class="nav-link" data-key="t-analytics">
+                                        Videos
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Playlist", "Video")" class="nav-link" data-key="t-crm">
+                                        Playlists
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                }
+                else
+                {
 
+<<<<<<< Updated upstream
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button"
                        aria-expanded="false" aria-controls="sidebarDashboards">
@@ -68,11 +129,16 @@
                 </li>
 
 
+=======
+                    //User menu
+
+                }
+>>>>>>> Stashed changes
             </ul>
         </div>
         <!-- Sidebar -->
     </div>
-        <div class="sidebar-background"></div>
+    <div class="sidebar-background"></div>
 </div>
 <!-- Left Sidebar End -->
 <!-- Vertical Overlay-->
