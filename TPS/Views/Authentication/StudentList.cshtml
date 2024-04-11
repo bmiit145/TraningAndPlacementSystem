@@ -92,20 +92,59 @@
                                                             {
                                                                 <span class="badge bg-primary">Approved</span>
                                                             }
-                                                            else
+                                                            else if (item.IsApproved == "2")
                                                             {
                                                                 <span class="badge bg-danger">Rejected</span>
                                                             }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-info">Improvment Needed</span>
+                                                            }
                                                         </td>
-                                                        <td>
+                                                        @* <td>
                                                             <a href="@Url.Action("ApproveStudent", "Authentication", new { id = item.Id })" class="btn btn-primary btn-sm">
                                                                 Approve
                                                             </a>
                                                             <a href="@Url.Action("RejectStudent", "Authentication", new { id = item.Id })" class="btn btn-info btn-sm">
                                                                 Reject
                                                             </a>
+                                                            <a href="@Url.Action("ImprovementStudent", "Authentication", new { id = item.Id })" class="btn btn-warning btn-sm">
+                                                                Needs Improvement
+                                                            </a>
                                                             <a href="@Url.Action("DeleteStudent", "Authentication", new { id = item.Id })" class="btn btn-danger btn-sm">Delete</a>
-                                                        </td>
+                                                        </td> *@
+                                                        <td>
+                                                        <div class="dropdown d-inline-block">
+                                                            <button class="btn btn-soft-secondary btn-sm dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                <i class="ri-more-fill align-middle"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                                <li>
+                                                                    <a href="@Url.Action("ApproveStudent", "Authentication", new { id = item.Id })" class="dropdown-item">
+                                                                        <i class="ri-eye-fill align-bottom me-2 text-muted"></i>Approve
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="@Url.Action("RejectStudent", "Authentication", new { id = item.Id })" class="dropdown-item">
+                                                                        <i class="ri-pencil-fill align-bottom me-2 text-muted"></i>Reject
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="@Url.Action("ImprovementStudent", "Authentication", new { id = item.Id })" class="dropdown-item">
+                                                                        <i class="ri-edit-box-line align-bottom me-2 text-muted"></i>Needs Improvement
+                                                                    </a>
+                                                                </li>
+                                                                <li>
+                                                                    <form method="post" action="@Url.Action("DeleteStudent", "Authentication")">
+                                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                                        <button type="submit" class="dropdown-item">
+                                                                            <i class="ri-delete-bin-fill align-bottom me-2 text-muted"></i>Delete
+                                                                        </button>
+                                                                    </form>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </td>
                                                     </tr>
                                                 }
                                         </tbody>

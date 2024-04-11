@@ -238,6 +238,27 @@ namespace TPS.Controllers
             return RedirectToAction("StudentList");
         }
 
+        [ActionName("ImprovementStudent")]
+        public IActionResult ImprovementStudent(int id)
+        {
+            // check that user is logged in or not
+            ISession session = HttpContext.Session;
+            if (string.IsNullOrEmpty(session.GetString("username")))
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            // check that user is admin or not
+            if (session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand cmd = new SqlCommand("update StudentProfile set is_approved = 3 where id = @id", db.conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            cmd.ExecuteNonQuery();
+            return RedirectToAction("StudentList");
+        }
+
         [ActionName("StudentList")]
         public IActionResult StudentList()
         {
