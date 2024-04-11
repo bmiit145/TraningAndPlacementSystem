@@ -60,7 +60,7 @@
                                     <p class="text-muted">Sign Up to continue to PTS.</p>
                                 </div>
                                 <div class="p-2 mt-4">
-                                    <form action="@Url.Action("registerSubmit", "Authentication")" method="post">
+                                    <form action="@Url.Action("registerSubmit", "Authentication")" method="post" id="registerForm">
 
                                         <div class="mb-3">
                                             <label for="username" class="form-label">First Name</label>
@@ -167,11 +167,8 @@
     <script src="~/assets/js/pages/particles.app.js"></script>
     <!-- password-addon init -->
     <script src="~/assets/js/pages/password-addon.init.js"></script>
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script>
         // Check if ViewBag.Error is present and show toast message
         $(document).ready(function(){
@@ -181,6 +178,58 @@
                 @(ViewBag.Error = null)
             }
         });
+        $('#registerForm').submit(function(e){
+            e.preventDefault();
+            var first_name = $('#first_name').val();
+            var last_name = $('#last_name').val();
+            var email = $('#email').val();
+            var c_no = $('#c_no').val();
+            var e_no = $('#e_no').val();
+            var username = $('#username').val();
+            var password = $('#password-input').val();
+            var con_password = $('#con_password').val();
+            if(first_name == '' || last_name == '' || email == '' || c_no == '' || e_no == '' || username == '' || password == '' || con_password == ''){
+                toastr.error('All fields are required');
+            }else{
+                if(password != con_password){
+                    toastr.error('Password and Confirm Password does not match');
+                }else{
+                    @* match regex for first_name,last_name,c_no,e_no,username *@
+                    var regex = /^[a-zA-Z]+$/;
+                    if(!regex.test(first_name)){
+                        toastr.error('First Name should contain only alphabets');
+                        return false;
+                    }
+                    if(!regex.test(last_name)){
+                        toastr.error('Last Name should contain only alphabets');
+                        return false;
+                    }
+                    var regex = /^[0-9]+$/;
+                    if(!regex.test(c_no)){
+                        toastr.error('Contact No should contain only numbers');
+                        return false;
+                    }
+                    if(!regex.test(e_no)){
+                        toastr.error('Enrollment No should contain only numbers');
+                        return false;
+                    }
+                    var regex = /^[a-zA-Z0-9]+$/;
+                    if(!regex.test(username)){
+                        toastr.error('Username should contain only alphabets and numbers');
+                        return false;
+                    }
+                    var regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+                    if(!regex.test(password)){
+                        toastr.error('Password should contain atleast 8 characters, 1 lowercase, 1 uppercase and 1 number');
+                        return false;
+                    }
+                    @* $('#updateProfile').unbind('submit').submit(); *@
+                    $('#registerForm').unbind('submit').submit();
+
+                }
+            }
+        });
+
     </script>
 
 </body>

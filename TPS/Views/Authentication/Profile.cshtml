@@ -276,8 +276,6 @@
                 @(ViewBag.Success = null)
             }
         });
-        @* add validations also match regex *@
-
         $('#updateProfile').submit(function(e){
             e.preventDefault();
             var first_name = $('#first_name').val();
@@ -293,7 +291,6 @@
             if (first_name == "" || last_name == "" || phone == "" || email == "" || cgpa == "" || marks9 == "" || marks10 == "" || marks11 == "" || marks12 == "") {
                 toastr.error("Please fill all the fields");
             } else {
-                @* also match the regex for first_name, last_name, phone, cgpa, marks9, marks10, marks11, marks12 *@
                 const regex = /^[a-zA-Z]+$/;
                 if (!regex.test(first_name)) {
                     toastr.error("First name should contain only alphabets");
@@ -306,6 +303,10 @@
                 const phoneRegex = /^[0-9]{10}$/;
                 if (!phoneRegex.test(phone)) {
                     toastr.error("Phone number should contain only 10 digits");
+                    return;
+                }
+                if (cgpa > 10) {
+                    toastr.error("CGPA should be under 10");
                     return;
                 }
                 const marksRegex = /^[0-9]{1,3}$/;
