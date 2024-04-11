@@ -254,10 +254,11 @@ namespace TPS.Controllers
             if(ID == null)
             {
                 db.open();
-                SqlCommand cmd = new SqlCommand("INSERT INTO Playlists (name , description , courseId) values (@name , @description , @courseId)", db.conn);
+                SqlCommand cmd = new SqlCommand("INSERT INTO Playlists (name , description , courseId , createdDate) values (@name , @description , @courseId , @createdDate)", db.conn);
                 cmd.Parameters.AddWithValue("@name", name);
                 cmd.Parameters.AddWithValue("@description", description);
                 cmd.Parameters.AddWithValue("@courseId", course);
+                cmd.Parameters.AddWithValue("@createdDate", DateTime.Now);
                 cmd.ExecuteNonQuery();
                 db.close();
                 db.open();

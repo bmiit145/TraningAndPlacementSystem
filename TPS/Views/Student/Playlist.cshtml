@@ -1,0 +1,123 @@
+@{
+    ViewBag.Title = "Playlist";
+    ViewBag.pTitle = "Dashboard";
+    ViewBag.pageTitle = "Playlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+
+@section styles {
+    <!-- jsvectormap css -->
+    <link href="~/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Style for the video cards */
+        .video-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for the video iframe */
+        .video-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .grid-layout-container {
+            margin-bottom: 20px;
+        }
+
+        .grid-layout-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .grid-layout-bar button {
+            margin-right: 10px;
+        }
+    </style>
+
+}
+
+<div class="container">
+    <div class="grid-layout-container">
+        @* <div class="grid-layout-bar">
+        <button class="btn" onclick="changeGridLayout('col-md-4')"><i class="fas fa-th-large"></i></button>
+        <button class="btn" onclick="changeGridLayout('col-md-3')"><i class="fas fa-th"></i></button>
+        <button class="btn" onclick="changeGridLayout('col-md-6')"><i class="fas fa-th-list"></i></button>
+        </div> *@
+
+        @* label to Most Popular Videos *@
+        <h4 class="header-title">Trending Playlists</h4>
+        <div class="row video-items">
+            @if (ViewBag.Playlists != null && ViewBag.Playlists.Count > 0)
+            {
+                foreach (var item in ViewBag.Playlists)
+                {
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between">
+                                    
+                                <h5 class="card-title">@item.name</h5>
+                                @* <strong class="text-muted">@item.createdDate</strong> *@
+                                <strong class="text-muted">@item.totalVideos Videos</strong>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text text-center">@item.description</p>
+                                <strong class="text-muted">@item.courseName</strong>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                <strong class="text-muted">@item.createdDate</strong>
+                                <a href="@Url.Action("ViewPlaylistVideo", "Student", new { id = item.ID })" class="btn btn-primary">View Playlist</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-md-12">
+                    <div class="alert alert-warning" role="alert">
+                        No Any Playlist Found !
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- apexcharts -->
+    <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Vector map-->
+    <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+    <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+    <!--Swiper slider js-->
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Dashboard init -->
+    <script src="~/assets/js/pages/dashboard-ecommerce.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+    <script>
+        function changeGridLayout(gridClass) {
+            // Remove existing grid classes from each column
+            $('.video-items > div[class^="col-"]').removeClass(function (index, className) {
+                return (className.match(/(^|\s)col-\S+/g) || []).join(' ');
+            });
+
+            $('.video-items > div').addClass(gridClass);
+        }
+    </script>
+}

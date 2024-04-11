@@ -74,6 +74,7 @@
                         <i class="mdi mdi-account-school">
                         </i> <span data-key="t-s-list">Student List</span>
                     </a>
+
                 </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="@Url.Action("Index", "Hiring")">
@@ -127,8 +128,18 @@
                 }
                 else
                 {
-                    //User menu
-
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href='@Url.Action("viewPlaylist", "Student")'>
+                        <i class="mdi mdi-account-multiple">
+                        </i> <span data-key="t-s-list">Playlists</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href='@Url.Action("ViewPlaylistVideo", "Student")'>
+                        <i class="mdi mdi-account-multiple">
+                        </i> <span data-key="t-s-list">Training Video</span>
+                    </a>
+                </li>
                 }
             </ul>
         </div>

@@ -25,6 +25,46 @@ namespace TPS.Controllers
             ViewBag.Pvideos = PlaylistVideo.GetVideos();
             return View("Dashboard");
         }
+
+        [ActionName("viewPlaylist")]
+        public IActionResult viewPlaylist()
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+
+            // get playlist details
+            ViewBag.Playlists = Playlist.GetPlaylists();
+            // get all the videos
+
+            //ViewBag.Pvideos = PlaylistVideo.GetVideos(id);
+            return View("Playlist");
+        }
+
+        [ActionName("ViewPlaylistVideo")]
+        public IActionResult ViewPlaylistVideo(int? id)
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+
+            // get playlist details
+            if (id > 0)
+            {
+                ViewBag.Playlist = Playlist.GetPlaylist(id ?? 0);
+                ViewBag.Pvideos = PlaylistVideo.GetVideos(id);
+            }
+            else{
+                ViewBag.Pvideos = PlaylistVideo.GetVideos();
+            }
+
+            return View("Videos");
+        }
+
     }
 }
 

@@ -1,0 +1,125 @@
+@{
+    ViewBag.Title = "Training Videos";
+    ViewBag.pTitle = "Dashboard";
+    ViewBag.pageTitle = "Training Videos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+
+@section styles {
+    <!-- jsvectormap css -->
+    <link href="~/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        /* Style for the video cards */
+        .video-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for the video iframe */
+        .video-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .grid-layout-container {
+            margin-bottom: 20px;
+        }
+
+        .grid-layout-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .grid-layout-bar button {
+            margin-right: 10px;
+        }
+    </style>
+
+}
+
+<div class="container">
+    <div class="grid-layout-container">
+        <div class="grid-layout-bar">
+            <button class="btn" onclick="changeGridLayout('col-md-4')"><i class="fas fa-th-large"></i></button>
+            <button class="btn" onclick="changeGridLayout('col-md-3')"><i class="fas fa-th"></i></button>
+            <button class="btn" onclick="changeGridLayout('col-md-6')"><i class="fas fa-th-list"></i></button>
+        </div>
+
+        @* label to Most Popular Videos *@
+        @if (ViewBag.Playlist != null)
+        {
+            <div class="d-flex justify-content-space-between mb-4">
+                <div class="ms-2">
+                        <h4 class="header-title">@ViewBag.playlist.name</h4>
+                        <span class="text-muted">@ViewBag.playlist.description</span>
+                </div>
+                    <div class="ms-2">
+                        <span class="text-muted">Total Videos: @ViewBag.playlist.totalVideos</span>
+                    </div>
+                
+            </div>
+        }
+        else
+        {
+            <h4 class="header-title">Most Recent Videos</h4>
+        }
+
+
+        <div class="row video-items">
+            @if (ViewBag.Pvideos != null && ViewBag.Pvideos.Count > 0)
+            {
+                foreach (var video in ViewBag.Pvideos)
+                {
+                    <div class=" col-md-4">
+                        <div class="video-card">
+                            <iframe class="video-iframe" src="https://www.youtube.com/embed/@video.link"
+                                allowfullscreen></iframe>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-md-12">
+                    <div class="alert alert-warning" role="alert">
+                        No Training Videos Found!
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- apexcharts -->
+    <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Vector map-->
+    <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+    <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+    <!--Swiper slider js-->
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Dashboard init -->
+    <script src="~/assets/js/pages/dashboard-ecommerce.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+    <script>
+        function changeGridLayout(gridClass) {
+            // Remove existing grid classes from each column
+            $('.video-items > div[class^="col-"]').removeClass(function (index, className) {
+                return (className.match(/(^|\s)col-\S+/g) || []).join(' ');
+            });
+
+            $('.video-items > div').addClass(gridClass);
+        }
+    </script>
+}

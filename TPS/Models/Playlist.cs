@@ -24,6 +24,8 @@ namespace TPS.Models
 
         public int totalVideos { get; set; }
 
+        public string createdDate { get; set; }
+
     
     public static Playlist GetPlaylist(int id){
         Playlist playlist = new Playlist();
@@ -41,6 +43,10 @@ namespace TPS.Models
             playlist.name = reader.GetString(1);
             playlist.description = reader.GetString(2);
             playlist.courseID = reader.GetInt32(3);
+            if (!reader.IsDBNull(4)){
+            playlist.createdDate = reader.GetDateTime(4).ToString("dd-MM-yyyy");
+            }
+            playlist.totalVideos = PlaylistVideo.GetVideoByPlaylist(playlist.ID).Count;
         }
         db.close();
         return playlist;
@@ -53,7 +59,7 @@ namespace TPS.Models
         SqlCommand cmd;
         db.open();
         // get course details also
-        string query = "SELECT p.ID, p.Name, p.Description, p.CourseID, c.Name AS courseName " +
+        string query = "SELECT p.ID, p.Name, p.Description, p.CourseID, p.createdDate , c.Name AS courseName " +
                        "FROM Playlists p " +
                        "LEFT JOIN Courses c ON p.CourseID = c.ID " +
                         "ORDER BY p.ID DESC";
@@ -67,7 +73,10 @@ namespace TPS.Models
             playlist.name = reader.GetString(1);
             playlist.description = reader.GetString(2);
             playlist.courseID = reader.GetInt32(3);
-            playlist.courseName = reader.GetString(4);
+            if (!reader.IsDBNull(4)){
+            playlist.createdDate = reader.GetDateTime(4).ToString("dd-MM-yyyy");
+            }
+            playlist.courseName = reader.GetString(5);
             playlist.totalVideos = PlaylistVideo.GetVideoByPlaylist(playlist.ID).Count;
 
             playlists.Add(playlist);
