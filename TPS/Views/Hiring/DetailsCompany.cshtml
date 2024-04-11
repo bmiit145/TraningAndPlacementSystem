@@ -55,7 +55,7 @@
                                     <div class="card">
                                         <div class="card-header">
                                             <h5 class="card-title mb-0">
-                                                Hiring Programs List
+                                                Hiring Programs List Company Opt For
                                             </h5>
                                         </div>
                                         <div class="card-body">
@@ -104,6 +104,9 @@
                                                         <th>Interview_date</th>
                                                         <th>Interview_time</th>
                                                         <th>Venue</th>
+                                                        <th>
+                                                            Action
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -115,6 +118,11 @@
                                                                     <td>@item.Interview_date</td>
                                                                     <td>@item.Interview_time</td>
                                                                     <td>@item.Venue</td>
+                                                                    <td>
+                                                                        <a href="@Url.Action("InterviewDetails", "Hiring", new { id = item.Id })" class="btn btn-primary">
+                                                                            View
+                                                                        </a>
+                                                                    </td>
                                                                 </tr>
                         }
                                                 </tbody>

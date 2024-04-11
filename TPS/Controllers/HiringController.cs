@@ -398,6 +398,42 @@ namespace TPS.Controllers
             return View("DetailsCompany");
         }
 
+        // InterviewDetails
+        [ActionName("InterviewDetails")]
+        public IActionResult InterviewDetails(int id)
+        {
+            // this will get the all details of the company like a company profile, company hiring, hiring program, interview
+            if (HttpContext.Session.GetString("role") == null)
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            // get the all details for the interview using join query so we can show the company details,hiring program details and training program details
+            SqlCommand command = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,hp.description,hp.start_date,hp.end_date,c1.name AS course_name, c1.id AS course_id FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.Courses c1 ON hp.course_id = c1.id WHERE i.interview_id = @id", db.conn);
+            command.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader = command.ExecuteReader();
+            TempInterViewDetails tempInterViewDetails = new TempInterViewDetails();
+            while (reader.Read())
+            {
+                tempInterViewDetails.Interview_id = id;
+                tempInterViewDetails.Company_id = reader.GetInt32(1);
+                tempInterViewDetails.Company_name = reader.GetString(2);
+                tempInterViewDetails.Interview_date = DateOnly.FromDateTime(reader.GetDateTime(3));
+                tempInterViewDetails.Interview_time = reader.GetTimeSpan(4);
+                tempInterViewDetails.Venue = reader.GetString(5);
+                tempInterViewDetails.Company_hiring_id = reader.GetInt32(6);
+                tempInterViewDetails.Program_name = reader.GetString(7);
+                tempInterViewDetails.Description = reader.GetString(8);
+                tempInterViewDetails.Start_date = reader.GetDateTime(9);
+                tempInterViewDetails.End_date = reader.GetDateTime(10);
+                tempInterViewDetails.Course_name = reader.GetString(11);
+                tempInterViewDetails.Course_id = reader.GetInt32(12);
+            }
+            ViewBag.InterviewDetails = tempInterViewDetails;
+            reader.Close();
+            return View("InterviewDetails");
+        }
+
         internal class Interview
         {
             public int Id { get; set; }
@@ -409,6 +445,23 @@ namespace TPS.Controllers
             public string Venue { get; set; }
             public int Company_hiring_id { get; set; }
         }
+    }
+
+    internal class TempInterViewDetails
+    {
+        public int Interview_id { get; set; }
+        public int Company_id { get; set; }
+        public string Company_name { get; set; }
+        public DateOnly Interview_date { get; set; }
+        public TimeSpan Interview_time { get; set; }
+        public string Venue { get; set; }
+        public int Company_hiring_id { get; set; }
+        public string Program_name { get; set; }
+        public string Description { get; set; }
+        public DateTime Start_date { get; set; }
+        public DateTime End_date { get; set; }
+        public string Course_name { get; set; }
+        public int Course_id { get; set; }
     }
 
     internal class StudentCompanyHiring

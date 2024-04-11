@@ -1,0 +1,169 @@
+@{
+    ViewBag.Title = "Manager Hiring Program";
+    ViewBag.pTitle = "Manager Hiring Program";
+    ViewBag.pageTitle = "Manager Hiring Program";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+                                                        <!--datatable css-->
+                                                        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+                                                        <!--datatable responsive css-->
+                                                        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
+
+                                                        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+}
+@* check that there is a message *@
+@if (ViewBag.Message != null)
+{
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Success!</strong> @ViewBag.Message
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+}
+<h1>
+    Interview Number : @ViewBag.InterviewDetails.Interview_id
+</h1>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Company Details</h5> 
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Company Id :
+                    </span>
+                    @ViewBag.InterviewDetails.Company_id
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Company Name:
+                    </span>
+                    @ViewBag.InterviewDetails.Company_name
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Interview Details</h5> 
+            </div>
+            <div class="card-body">
+                <p class="card-title mb-3">
+                    <span style="font-weight: bold;">
+                        Interview Date:
+                    </span>
+                    @ViewBag.InterviewDetails.Interview_date
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Interview Time:
+                    </span>
+                    @ViewBag.InterviewDetails.Interview_time
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    Hiring Program Details
+                </h5> 
+            </div>
+            <div class="card-body">
+                <p class="card-title mb-3">
+                    <span style="font-weight: bold;">
+                        Program name:
+                    </span>
+                    @ViewBag.InterviewDetails.Program_name
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Description:
+                    </span>
+                    @ViewBag.InterviewDetails.Description
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Start Date:
+                    </span>
+                    @ViewBag.InterviewDetails.Start_date
+                </p>
+                <p> 
+                    <span style="font-weight: bold;">
+                        End Date:
+                    </span>
+                    @ViewBag.InterviewDetails.End_date
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    Course Details
+                </h5> 
+            </div>
+            <div class="card-body">
+                <p class="card-title mb-3">
+                    <span style="font-weight: bold;">
+                        Course Name:
+                    </span>
+                    @ViewBag.InterviewDetails.Course_name
+                </p>
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Visit:
+                    </span>
+                    <a href="@Url.Action("Details","Courses", new { id = ViewBag.InterviewDetails.Course_id })">Course Details</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    Actions
+                </h5> 
+            </div>
+            <div class="card-body">
+                <a href="@Url.Action("AllCompaniesStudent", "Company")" class="btn btn-primary">Back</a>
+                @* apply button *@
+                <a href="@Url.Action("ApplyStudent", "Hiring", new { id = ViewBag.Interview_id })" class="btn btn-primary">Apply</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <!--datatable js-->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+}
