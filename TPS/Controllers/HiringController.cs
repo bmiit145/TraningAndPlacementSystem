@@ -323,6 +323,81 @@ namespace TPS.Controllers
             return RedirectToAction("AllInterview");
         }
 
+        [ActionName("DetailsCompany")]
+        public IActionResult DetailsCompany(int id)
+        {
+            // this will get the all details of the company like a company profile, company hiring, hiring program, interview
+            if (HttpContext.Session.GetString("role") == null)
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            // get company profile
+            SqlCommand command = new SqlCommand("SELECT * FROM CompanyProfile WHERE company_id = @id", db.conn);
+            command.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader = command.ExecuteReader();
+            Company company = new Company()
+            {
+                Name = string.Empty,
+                IndustryType = string.Empty,
+                Email = string.Empty,
+                Description = string.Empty
+            };
+            while (reader.Read())
+            {
+                company.Id = reader.GetInt32(0);
+                company.Name = reader.GetString(1);
+                company.IndustryType = reader.GetString(2);
+                company.Email = reader.GetString(3);
+                company.Description = reader.GetString(4);
+            }
+            ViewBag.company = company;
+            reader.Close();
+            // get company hiring details like program_name,details,start_date,end_date and course_name
+            SqlCommand command1 = new SqlCommand("SELECT ch.id,hp.program_name,hp.description,hp.start_date,hp.end_date,c.name AS course_name FROM dbo.CompanyHiring ch INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.Courses c ON hp.course_id = c.id WHERE ch.company_id = @id", db.conn);
+            command1.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader1 = command1.ExecuteReader();
+            List<StudentCompanyHiring> studentCompanyHirings = new List<StudentCompanyHiring>();
+            while (reader1.Read())
+            {
+                StudentCompanyHiring studentCompanyHiring = new()
+                {
+                    Id = reader1.GetInt32(0),
+                    Program_name = reader1.GetString(1),
+                    Description = reader1.GetString(2),
+                    Start_date = reader1.GetDateTime(3),
+                    End_date = reader1.GetDateTime(4),
+                    Course_name = reader1.GetString(5)
+                };
+                studentCompanyHirings.Add(studentCompanyHiring);
+            }
+            ViewBag.CompanyHirings = studentCompanyHirings;
+            reader1.Close();
+            // get interview details
+            SqlCommand command3 = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id WHERE c.company_id = @id", db.conn);
+            command3.Parameters.AddWithValue("@id", id);
+            SqlDataReader reader3 = command3.ExecuteReader();
+            List<Interview> interviews = new List<Interview>();
+            while (reader3.Read())
+            {
+                Interview interview = new()
+                {
+                    Id = reader3.GetInt32(0),
+                    Company_id = reader3.GetInt32(1),
+                    Company_name = reader3.GetString(2),
+                    Hiring_name = reader3.GetString(2),
+                    Interview_date = DateOnly.FromDateTime(reader3.GetDateTime(3)),
+                    Interview_time = reader3.GetTimeSpan(4),
+                    Venue = reader3.GetString(5),
+                    Company_hiring_id = reader3.GetInt32(6)
+                };
+                interviews.Add(interview);
+            }
+            ViewBag.Interviews = interviews;
+            reader3.Close();
+            return View("DetailsCompany");
+        }
+
         internal class Interview
         {
             public int Id { get; set; }
@@ -334,6 +409,16 @@ namespace TPS.Controllers
             public string Venue { get; set; }
             public int Company_hiring_id { get; set; }
         }
+    }
+
+    internal class StudentCompanyHiring
+    {
+        public int Id { get; set; }
+        public string Program_name { get; set; }
+        public string Description { get; set; }
+        public DateTime Start_date { get; set; }
+        public DateTime End_date { get; set; }
+        public string Course_name { get; set; }
     }
 }
 

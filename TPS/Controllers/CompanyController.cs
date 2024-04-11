@@ -172,6 +172,36 @@ namespace TPS.Controllers
             ViewBag.Message = "Company Updated Successfully";
             return RedirectToAction("Index");
         }
+
+        // action that will return all the companies and with number of interviews scheduled for each company
+        [ActionName("AllCompaniesStudent")]
+        public IActionResult AllCompaniesWith()
+        {
+            
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand cmd = new SqlCommand("SELECT * FROM CompanyProfile", db.conn);
+            SqlDataReader reader = cmd.ExecuteReader();
+            List<Company> companies = new List<Company>();
+            while (reader.Read())
+            {
+                Company company = new()
+                {
+                    Id = reader.GetInt32(0),
+                    Name = reader.GetString(1),
+                    IndustryType = reader.GetString(2),
+                    Email = reader.GetString(3),
+                    Description = reader.GetString(4)
+                };
+                companies.Add(company);
+            }
+            reader.Close();
+            ViewBag.companies = companies;
+            return View("AllCompaniesStudent");
+        }
     }
 
 }
