@@ -17,16 +17,13 @@
     <div id="layout-wrapper">
         @Html.Partial("~/Views/Shared/_menu.cshtml")
         <div class="main-content">
-
             <div class="page-content">
                 <div class="container-fluid">
-
                     <div class="position-relative mx-n4 mt-n4">
                         <div class="profile-wid-bg profile-setting-img">
                             <img src="~/assets/images/profile-bg.jpg" class="profile-wid-img" alt="">
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-xxl-3">
                             <div class="card mt-n5">
@@ -136,7 +133,7 @@
                                                             <label for="cgpa" class="form-label">
                                                                 CGPA
                                                             </label>
-                                                            <input type="number" 
+                                                            <input type="text" 
                                                             name="cgpa"
                                                             class="form-control"
                                                                    placeholder="Enter your gcgpa"
@@ -148,7 +145,7 @@
                                                             <label for="marks9" class="form-label">
                                                                 9 Marks
                                                             </label>
-                                                            <input type="number" class="form-control" id="marks9"
+                                                            <input type="text" class="form-control" id="marks9"
                                                                     name="marks9"
                                                                    placeholder="Enter your Standard 9 Marks" value="@ViewBag.MARKS9">
                                                         </div>
@@ -158,8 +155,7 @@
                                                             <label for="marks10" class="form-label">
                                                                 10 Marks
                                                             </label>
-                                                            <input type="number" class="form-control" id="marks10"
-                                                                    name="marks10"
+                                                            <input type="text" class="form-control" id="marks10" name="marks10"
                                                                    placeholder="Enter your Standard 10 Marks" value="@ViewBag.MARKS10">
                                                         </div>
                                                     </div>
@@ -168,7 +164,7 @@
                                                             <label for="number" class="form-label">
                                                                 11 Marks
                                                             </label>
-                                                            <input type="number" class="form-control" id="marks11"
+                                                            <input type="text" class="form-control" id="marks11"
                                                                     name="marks11"
                                                                    placeholder="Enter your Standard 11 Marks" value="@ViewBag.MARKS11">
                                                         </div>
@@ -178,7 +174,7 @@
                                                             <label for="marks12" class="form-label">
                                                                 12 Marks
                                                             </label>
-                                                            <input type="number" class="form-control" id="marks12"
+                                                            <input type="text" class="form-control" id="marks12"
                                                                     name="marks12"
                                                                    placeholder="Enter your Standard 12 Marks" value="@ViewBag.MARKS12">
                                                         </div>
@@ -278,6 +274,58 @@
             if (success) {
                 toastr.success(success);
                 @(ViewBag.Success = null)
+            }
+        });
+        @* add validations also match regex *@
+
+        $('#updateProfile').submit(function(e){
+            e.preventDefault();
+            var first_name = $('#first_name').val();
+            var last_name = $('#lastnameInput').val();
+            var phone = $('#phonenumberInput').val();
+            var email = $('#emailInput').val();
+            var cgpa = $('#cgpa').val();
+            var marks9 = $('#marks9').val();
+            var marks10 = $('#marks10').val();
+            var marks11 = $('#marks11').val();
+            var marks12 = $('#marks12').val();
+            console.log(first_name, last_name, phone, email, cgpa, marks9, marks10, marks11, marks12);
+            if (first_name == "" || last_name == "" || phone == "" || email == "" || cgpa == "" || marks9 == "" || marks10 == "" || marks11 == "" || marks12 == "") {
+                toastr.error("Please fill all the fields");
+            } else {
+                @* also match the regex for first_name, last_name, phone, cgpa, marks9, marks10, marks11, marks12 *@
+                const regex = /^[a-zA-Z]+$/;
+                if (!regex.test(first_name)) {
+                    toastr.error("First name should contain only alphabets");
+                    return;
+                }
+                if (!regex.test(last_name)) {
+                    toastr.error("Last name should contain only alphabets");
+                    return;
+                }
+                const phoneRegex = /^[0-9]{10}$/;
+                if (!phoneRegex.test(phone)) {
+                    toastr.error("Phone number should contain only 10 digits");
+                    return;
+                }
+                const marksRegex = /^[0-9]{1,3}$/;
+                if (!marksRegex.test(marks9)) {
+                    toastr.error("Marks should be in format 0-100");
+                    return;
+                }
+                if (!marksRegex.test(marks10)) {
+                    toastr.error("Marks should be in format 0-100");
+                    return;
+                }
+                if (!marksRegex.test(marks11)) {
+                    toastr.error("Marks should be in format 0-100");
+                    return;
+                }
+                if (!marksRegex.test(marks12)) {
+                    toastr.error("Marks should be in format 0-100");
+                    return;
+                }
+                $('#updateProfile').unbind('submit').submit();
             }
         });
     </script>
