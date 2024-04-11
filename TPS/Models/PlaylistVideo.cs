@@ -38,6 +38,10 @@ namespace TPS.Models
             this.courseID = courseID ?? 0;
         }
 
+        public static List<PlaylistVideo> GetVideoByPlaylist(int id){
+                return GetVideos().FindAll(video => video.playlistID == id);
+        }
+
         // GetVideos 
        public static List<PlaylistVideo> GetVideos()
 {

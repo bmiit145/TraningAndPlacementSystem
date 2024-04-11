@@ -48,7 +48,7 @@ namespace TPS.Controllers
         }
 
         [ActionName("Playlist")]
-        public IActionResult PlaylistPage()
+        public IActionResult PlaylistPage(int? id)
         {
             // if session is not available then redirect to signin page
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
@@ -56,7 +56,13 @@ namespace TPS.Controllers
                 ViewBag.Error = "You are not authorized to access this page";
                 return RedirectToAction("SignIn", "Authentication");
             }
-
+            if (id != null || id > 0)
+            {
+                ViewBag.Playlist = Playlist.GetPlaylist(id ?? 0);
+                ViewBag.Videos = PlaylistVideo.GetVideoByPlaylist(id ?? 0);
+            }
+            
+            ViewBag.Playlists = Playlist.GetPlaylists();
             ViewBag.Courses = Course.GetCourses();
             return View("playlist");
         }
@@ -208,6 +214,104 @@ namespace TPS.Controllers
             }
         }
 
+    [ActionName("addorEditPlaylist")]
+        public IActionResult addorEditPlaylist(string? ID , string name , string description , int course , string[] videoUrls , string[] videoTitles )
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                ViewBag.Error = "You are not authorized to access this page";
+                return RedirectToAction("SignIn", "Authentication");
+            }
+
+            if(string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(description) || course == -1 || videoUrls.Length == 0 || videoTitles.Length == 0)
+            {
+                ViewBag.Error = "Name, Description, Course and atleast one video are required.";
+                return RedirectToAction("playlist");
+            }
+            string[] link = videoUrls;
+            for (int i = 0; i < link.Length; i++)
+            {
+                if (link[i].Contains("youtube.com"))
+                {
+                    link[i] = link[i].Substring(link[i].IndexOf("v=") + 2);
+                    if (link[i].Contains("&"))
+                    {
+                        link[i] = link[i].Substring(0, link[i].IndexOf("&"));
+                    }
+                }
+                else if (link[i].Contains("youtu.be"))
+                {
+                    link[i] = link[i].Substring(link[i].LastIndexOf("/") + 1);
+                }
+                else
+                {
+                    ViewBag.Error = "Invalid Youtube Video Link";
+                    return View("playlist");
+                }
+            }
+
+            if(ID == null)
+            {
+                db.open();
+                SqlCommand cmd = new SqlCommand("INSERT INTO Playlists (name , description , courseId) values (@name , @description , @courseId)", db.conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@description", description);
+                cmd.Parameters.AddWithValue("@courseId", course);
+                cmd.ExecuteNonQuery();
+                db.close();
+                db.open();
+                cmd = new SqlCommand("SELECT MAX(id) FROM Playlists", db.conn);
+                int playlistId = (int)cmd.ExecuteScalar();
+                    db.close();
+                    db.open();
+                    for (int i = 0; i < link.Length; i++)
+                    {
+                        cmd = new SqlCommand("INSERT INTO PlaylistVideos (link , title , playlistId , courseId) values (@link , @title , @playlistId , @courseId)", db.conn);
+                        cmd.Parameters.AddWithValue("@link", link[i]);
+                        cmd.Parameters.AddWithValue("@title", videoTitles[i]);
+                        cmd.Parameters.AddWithValue("@playlistId", playlistId);
+                        cmd.Parameters.AddWithValue("@courseId", course);
+                        cmd.ExecuteNonQuery();
+                    }
+                    db.close();
+                
+                ViewBag.Success = "Playlist added successfully";
+            }
+            else
+            {
+                db.open();
+                SqlCommand cmd = new SqlCommand("UPDATE Playlists SET name = @name , description = @description , courseId = @courseId WHERE id = @PlaylistId", db.conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@description", description);
+                cmd.Parameters.AddWithValue("@courseId", course);
+                cmd.Parameters.AddWithValue("@PlaylistId", ID);
+                cmd.ExecuteNonQuery();
+                db.close();
+
+                db.open();
+                cmd = new SqlCommand("DELETE FROM PlaylistVideos WHERE playlistId = @PlaylistId", db.conn);
+                cmd.Parameters.AddWithValue("@PlaylistId", ID);
+                cmd.ExecuteNonQuery();
+                db.close();
+
+                db.open();
+                for (int i = 0; i < link.Length; i++)
+                {
+                    cmd = new SqlCommand("INSERT INTO PlaylistVideos (link , title , playlistId , courseId) values (@link , @title , @playlistId , @courseId)", db.conn);
+                    cmd.Parameters.AddWithValue("@link", link[i]);
+                    cmd.Parameters.AddWithValue("@title", videoTitles[i]);
+                    cmd.Parameters.AddWithValue("@playlistId", ID);
+                    cmd.Parameters.AddWithValue("@courseId", course);
+                    cmd.ExecuteNonQuery();
+                }
+                db.close();
+                ViewBag.Success = "Playlist updated successfully";
+            }
+
+            return RedirectToAction("playlist");
+        }
+
         [ActionName("DeleteVideo")]
         public IActionResult DeleteVideo(int id)
         {
@@ -229,6 +333,34 @@ namespace TPS.Controllers
             return RedirectToAction("VideoList");
         }
 
+
+        [ActionName("DeletePlaylist")]
+        public IActionResult DeletePlaylist(int id)
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                ViewBag.Error = "You are not authorized to access this page";
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            // delete the videos from the database
+            db.open();
+            SqlCommand cmd1 = new SqlCommand("DELETE FROM PlaylistVideos WHERE playlistId = @PlaylistId", db.conn);
+            cmd1.Parameters.AddWithValue("@PlaylistId", id);
+            cmd1.ExecuteNonQuery();
+            db.close();
+
+            // delete the playlist from the database
+            db.open();
+            SqlCommand cmd = new SqlCommand("DELETE FROM Playlists WHERE id = @PlaylistId", db.conn);
+            cmd.Parameters.AddWithValue("@PlaylistId", id);
+            cmd.ExecuteNonQuery();
+            db.close();
+
+
+            ViewBag.Success = "Playlist deleted successfully";
+            return RedirectToAction("playlist");
+        }
     }
 
 }

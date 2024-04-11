@@ -79,7 +79,7 @@
                                     <option value="-1">Select Playlist</option>
                                     @foreach (var item in ViewBag.Playlists)
                                     {
-                                        <option value="@item.ID">@item.Name</option>
+                                        <option value="@item.ID">@item.name</option>
                                     }
                                 </select>
                             }
@@ -119,7 +119,11 @@
                                     <option value="-1">Select Course</option>
                                     @foreach (var item in ViewBag.Courses)
                                     {
+                                        @if(item.ID == ViewBag.Video.courseID){
+                                        <option value="@item.ID" selected>@item.Name</option>
+                                        }else{
                                         <option value="@item.ID" >@item.Name</option>
+                                        }
                                     }
                                 </select>
                             }
@@ -137,7 +141,11 @@
                                     <option value="-1">Select Playlist</option>
                                     @foreach (var item in ViewBag.Playlists)
                                     {
-                                        <option value="@item.ID">@item.Name</option>
+                                        @if(item.ID == ViewBag.Video.playlistID){
+                                        <option value="@item.ID" selected>@item.name</option>
+                                        }else{
+                                        <option value="@item.ID">@item.name</option>
+                                        }
                                     }
                                 </select>
                             }

@@ -19,7 +19,8 @@
     <div class="col-md-12 col-lg-6">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Add New Playlist </h4>
+                using Microsoft.EntityFrameworkCore.Metadata.Internal;
+                <h4 class="card-title">Playlist Details</h4>
             </div>
             <div class="card-body">
                 @if (ViewBag.Error != null)
@@ -30,130 +31,320 @@
                 }
             </div>
             <div class="p-3">
-                <form action="@Url.Action("addorEditPlaylist", "Video")" method="post" class="form">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" name="name" class="form-control" id="name" placeholder="Enter Playlist Name">
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea name="description" class="form-control" id="description"
-                            placeholder="Enter Description">
-                    </textarea>
-                    </div>
-                    <div class="mb-3" id="courseSelection">
-                        <label for="course" class="form-label">Course</label>
-                        @if (ViewBag.Courses == null || ViewBag.Courses.Count == 0)
-                        {
-                            <p>No courses found. Please <a href="@Url.Action("AddCourse", "Course")">add a course</a>.
-                            </p>
-                        }
-                        else
-                        {
-                            <select class="form-select" name="course" id="course">
-                                <option value="-1">Select Course</option>
-                                @foreach (var item in ViewBag.Courses)
-                                {
-                                    <option value="@item.ID">@item.Name</option>
-                                }
-                            </select>
-                        }
-                    </div>
-                    @* title for videos *@
-                    <div id="videoUrlsContainer">
-                        <h4 class="card-title">Add Videos</h4>
-                        <div class="mb-3 d-flex align-items-center">
-                            <input type="text" name="videoUrls[]" class="form-control video-url link"
-                                placeholder="Enter Video URL">
-                            <button type="button" class="btn btn-success add-video ms-2">+</button>
+                @if (ViewBag.Playlist == null)
+                {
+                    <form action="@Url.Action("addorEditPlaylist", "Video")" method="post" class="form" id="playlist-form">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="Enter Playlist Name">
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea name="description" class="form-control" id="description"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+                        <div class="mb-3" id="courseSelection">
+                            <label for="course" class="form-label">Course</label>
+                            @if (ViewBag.Courses == null || ViewBag.Courses.Count == 0)
+                            {
+                                <p>No courses found. Please <a href="@Url.Action("AddCourse", "Course")">add a course</a>.
+                                </p>
+                            }
+                            else
+                            {
+                                <select class="form-select" name="course" id="course">
+                                    <option value="-1">Select Course</option>
+                                    @foreach (var item in ViewBag.Courses)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        @* title for videos *@
+                        <div id="videoUrlsContainer">
+                            <h4 class="card-title">Add Videos</h4>
+                            <div class="mb-3 d-flex align-items-center">
+                                <input type="text" name="videoUrls[]" class="form-control video-url link"
+                                    placeholder="Enter Video URL">
+                                <button type="button" class="btn btn-success add-video ms-2">+</button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                    </form>
+                }
+                else
+                {
+                    <form action="@Url.Action("addorEditPlaylist", "Video")" method="post" class="form" id="playlist-form">
+                        <input type="hidden" name="id" value="@ViewBag.Playlist.ID">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="Enter Playlist Name"
+                                value="@ViewBag.Playlist.name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea name="description" class="form-control" id="description"
+                                placeholder="Enter Description">@ViewBag.Playlist.description</textarea>
+                        </div>
+                        <div class="mb-3" id="courseSelection">
+                            <label for="course" class="form-label">Course</label>
+                            @if (ViewBag.Courses == null || ViewBag.Courses.Count == 0)
+                            {
+                                <p>No courses found. Please <a href="@Url.Action("AddCourse", "Course")">add a course</a>.
+                                </p>
+                            }
+                            else
+                            {
+                                <select class="form-select" name="course" id="course">
+                                    <option value="-1">Select Course</option>
+                                    @foreach (var item in ViewBag.Courses)
+                                    {
+                                        @if (item.ID == ViewBag.Playlist.courseID)
+                                        {
+                                            <option value="@item.ID" selected>@item.Name</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ID">@item.Name</option>
+                                        }
+                                    }
+                                </select>
+                            }
+                        </div>
+                        @* title for videos *@
+                        <div id="videoUrlsContainer">
+                            <h4 class="card-title">Add Videos</h4>
+
+                            @foreach (var item in ViewBag.Videos)
+                            {
+                                <div class="mb-3 d-flex align-items-center">
+                                    <input type="text" name="videoUrls[]" class="form-control video-url link"
+                                        placeholder="Enter Video URL" value="https://www.youtube.com/watch?v=@item.link">
+                                    @if (item == ViewBag.Videos[0])
+                                    {
+                                        <button type="button" class="btn btn-success add-video ms-2">+</button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-danger remove-video ms-2">-</button>
+                                    }
+                                </div>
+                                <input type="text" class="form-control mb-2" name="videoTitles[]" value="@item.title">
+                            }
+                            @if (ViewBag.Videos.Count == 0)
+                            {
+                                <div class="mb-3 d-flex align-items-center">
+                                    <input type="text" name="videoUrls[]" class="form-control video-url link"
+                                        placeholder="Enter Video URL">
+                                    <button type="button" class="btn btn-success add-video ms-2">+</button>
+                                </div>
+                            }
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Update</button>
+                    </form>
+                }
             </div>
         </div>
 
     </div>
 </div>
 
-@section scripts {
-    <!-- apexcharts -->
-    <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
-
-    <!-- Vector map-->
-    <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
-    <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
-
-    <!--Swiper slider js-->
-    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
-
-    <!-- Dashboard init -->
-    <script src="~/assets/js/pages/dashboard-ecommerce.init.js"></script>
-
-    <!-- App js -->
-    <script src="~/assets/js/app.js"></script>
-
-
-    <script src="~/assets/js/youtubeVideo.js"></script>
-
-    <script>
-
-        $(document).ready(function () {
-            // Add video input box on click of '+' button
-            $(document).on('click', '.add-video', function () {
-                var html = '<div class="mb-3 d-flex align-items-center"><input type="text" name="videoUrls[]" class="form-control video-url link" placeholder="Enter Video URL"><button type="button" class="btn btn-danger remove-video ms-2">-</button></div>';
-                $('#videoUrlsContainer').append(html);
-            });
-
-            // Remove video input box on click of '-' button
-            $(document).on('click', '.remove-video', function () {
-                $(this).closest('.mb-3').remove();
-            });
-
-            function appendVideoTitle(input, title) {
-               // input.parent().after('<p class="text-success">' + title + '</p>');
-                input.parent().after('<input type="text" class="form-control mb-2" name="videoTitles[]" value="' + title + '">');
-            }
-
-            function removeVideoTitle(input) {
-                input.parent().next().remove();
-            }
-
-            // Hide an input box if the link is erased
-            $(document).on('input', '.video-url', function () {
-                var input = $(this);
-                var value = $(this).val();
-
-                // Check if the value is empty and it's not the first input field
-                if (!value && input.closest('.mb-3').index() !== 1) {
-                    input.parent().remove();
-                    removeVideoTitle(input);
-                }
-                else if (isValidYouTubeUrl(value)) {
-                    var videoId = extractVideoId(value);
-                    if (videoId) {
-                        getYouTubeVideoInfo(value, function (error, data) {
-                            if (!error) {
-                                appendVideoTitle(input, data.snippet.title);
-                                  $("#submitBtn").prop("disabled", false); 
-                            } else {
-                                removeVideoTitle(input);
-                                $("#youtubePreview").html("");
-                                $("#submitBtn").prop("disabled", true);
-                                toastr.error("Error fetching video information. Please try again later.");
+<!--  table of playlists -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Playlists</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-nowrap align-middle table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Course</th>
+                                <th scope="col">Videos</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Playlists == null || ViewBag.Playlists.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center">No playlists found.</td>
+                                </tr>
                             }
-                        });
+                            else
+                            {
+                                @foreach (var item in ViewBag.Playlists)
+                                {
+                                    <tr>
+                                        <th scope="row">@item.ID</th>
+                                        <td>@item.name</td>
+                                        <td>@item.description</td>
+                                        <td>@item.courseName</td>
+                                        <td>@item.totalVideos</td>
+                                        <td>
+                                            <a href="@Url.Action("playlist", "Video", new { id = item.ID })"
+                                                class="btn btn-primary btn-sm">Edit</a>
+                                            <a href="@Url.Action("deletePlaylist", "Video", new { id = item.ID })"
+                                                class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section scripts {
+        <!-- apexcharts -->
+        <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+        <!-- Vector map-->
+        <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+        <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+        <!--Swiper slider js-->
+        <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+        <!-- Dashboard init -->
+        <script src="~/assets/js/pages/dashboard-ecommerce.init.js"></script>
+
+        <!-- App js -->
+        <script src="~/assets/js/app.js"></script>
+
+
+        <script src="~/assets/js/youtubeVideo.js"></script>
+
+        <script>
+
+            $(document).ready(function () {
+                // Add video input box on click of '+' button
+                $(document).on('click', '.add-video', function () {
+                    var html = '<div class="mb-3 d-flex align-items-center"><input type="text" name="videoUrls[]" class="form-control video-url link" placeholder="Enter Video URL"><button type="button" class="btn btn-danger remove-video ms-2">-</button></div>';
+                    $('#videoUrlsContainer').append(html);
+                });
+
+                // Remove video input box on click of '-' button
+                $(document).on('click', '.remove-video', function () {
+                    $(this).closest('.mb-3').remove();
+                });
+
+                function appendVideoTitle(input, title) {
+                    // input.parent().after('<p class="text-success">' + title + '</p>');
+                    input.parent().after('<input type="text" class="form-control mb-2" name="videoTitles[]" value="' + title + '">');
+                }
+
+                function removeVideoTitle(input) {
+                    input.parent().next().remove();
+                }
+
+                // Hide an input box if the link is erased
+                $(document).on('input', '.video-url', function () {
+                    var input = $(this);
+                    var value = $(this).val();
+
+                    // Check if the value is empty and it's not the first input field
+                    if (!value && input.closest('.mb-3').index() !== 1) {
+                        input.parent().remove();
+                        removeVideoTitle(input);
+                    }
+                    else if (isValidYouTubeUrl(value)) {
+                        var videoId = extractVideoId(value);
+                        if (videoId) {
+                            getYouTubeVideoInfo(value, function (error, data) {
+                                if (!error) {
+                                    appendVideoTitle(input, data.snippet.title);
+                                    $("#submitBtn").prop("disabled", false);
+                                } else {
+                                    removeVideoTitle(input);
+                                    $("#youtubePreview").html("");
+                                    $("#submitBtn").prop("disabled", true);
+                                    toastr.error("Error fetching video information. Please try again later.");
+                                }
+                            });
+                        } else {
+                            removeVideoTitle(input);
+                            $("#youtubePreview").html("");
+                            $("#submitBtn").prop("disabled", true);
+                        }
                     } else {
                         removeVideoTitle(input);
-                        $("#youtubePreview").html("");
-                        $("#submitBtn").prop("disabled", true);
                     }
-                }else {
-                    removeVideoTitle(input);
-                }
+                });
             });
-        });
 
 
-    </script>
-}
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                // Add custom validation methods
+                $.validator.addMethod("noSpecialChars", function (value, element) {
+                    return this.optional(element) || /^[a-zA-Z0-9\s\-/.|]+$/.test(value);
+                }, "Special characters are not allowed except '-', '.', '/', '|'");
+
+                $.validator.addMethod("courseNotSelected", function (value, element) {
+                    return value !== "-1";
+                }, "Please select a course.");
+
+                // Initialize form validation
+                $("#playlist-form").validate({
+                    rules: {
+                        name: {
+                            required: true,
+                            noSpecialChars: true
+                        },
+                        description: {
+                            required: true,
+                            noSpecialChars: true
+                        },
+                        course: {
+                            courseNotSelected: true
+                        },
+                        "videoUrls[]": {
+                            required: true
+                        },
+                        "videoTitles[]": {
+                            required: true
+                        }
+                    },
+                    messages: {
+                        name: {
+                            required: "Please enter a name.",
+                            noSpecialChars: "Special characters are not allowed except '-', '.', '/', '|'"
+                        },
+                        description: {
+                            required: "Please enter a description.",
+                            noSpecialChars: "Special characters are not allowed except '-', '.', '/', '|'"
+                        },
+                        "videoUrls[]": {
+                            required: "Please enter at least one video URL."
+                        },
+                        "videoTitles[]": {
+                            required: "Please enter the title of the video."
+                        },
+                        course: {
+                            courseNotSelected: "Please select a course."
+                        }
+                    },
+                    errorPlacement: function (error, element) {
+                        if (element.attr("name") == "videoUrls[]") {
+                            error.insertAfter(element.closest(".mb-3"));
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    },
+                    submitHandler: function (form) {
+                        form.submit();
+                    }
+                });
+            });
+        </script>
+    }
