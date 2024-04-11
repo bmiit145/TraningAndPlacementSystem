@@ -40,6 +40,36 @@
                                         <p class="text-muted mb-0">
                                             @ViewBag.Username
                                         </p>
+                                        <p>
+                                            Status
+                                            @if (ViewBag.CGPA == null || ViewBag.MARKS9 == null || ViewBag.MARKS10 == null || ViewBag.MARKS11 == null || ViewBag.MARKS12 == null || ViewBag.CGPA == "" || ViewBag.MARKS9 == "" || ViewBag.MARKS10 == "" || ViewBag.MARKS11 == "" || ViewBag.MARKS12 == "")
+                                            {
+                                                <span class="badge bg-danger">Please Complete Profile @ViewBag.IsApproved</span>
+                                            }
+                                            else
+                                            {
+                                                @if (ViewBag.IsApproved == "0")
+                                                {
+                                                                        <span class="badge bg-success">Applied</span>
+                                                }
+                                                else if (ViewBag.IsApproved == "1")
+                                                {
+                                                                        <span class="badge bg-primary">Approved</span>
+                                                }
+                                                else if (ViewBag.IsApproved == "2")
+                                                {
+                                                                        <span class="badge bg-danger">Rejected</span>
+                                                }
+                                                else if (ViewBag.IsApproved == "3")
+                                                {
+                                                                        <span class="badge bg-info">Improvment Needed</span>
+                                                }
+                                                else
+                                                {
+                                                                        <span class="badge bg-warning">Applied For Improvment</span>
+                                                }
+                                            }
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -51,14 +81,14 @@
                                         role="tablist">
                                         @if (session.GetString("role") != "1")
                                         {
-                                        
-                                        <li class="nav-item">
-                                            <a class="nav-link" data-bs-toggle="tab" href="#personalDetails"
-                                               role="tab">
-                                                <i class="fas fa-home"></i>
-                                                Personal Details
-                                            </a>
-                                        </li>
+
+                                            <li class="nav-item">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#personalDetails"
+                                                   role="tab">
+                                                    <i class="fas fa-home"></i>
+                                                    Personal Details
+                                                </a>
+                                            </li>
                                         }
                                         <li class="nav-item">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#changePassword" role="tab">
@@ -72,126 +102,143 @@
                                     <div class="tab-content">
                                         @if (session.GetString("role") != "1")
                                         {
-                                        <div class="tab-pane" id="personalDetails" role="tabpanel">
-                                            <form action="@Url.Action("UpdateProfile", "Authentication")"
-                                             method="post" id="updateProfile">
-                                                <div class="row">
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="first_name" class="form-label">
-                                                                First
-                                                                Name
-                                                            </label>
-                                                            <input type="text" class="form-control" id="first_name"
-                                                                    name="first_name"
-                                                                   placeholder="Enter your firstname" value="@ViewBag.FirstName">
+                                            <div class="tab-pane" id="personalDetails" role="tabpanel">
+                                                <form action="@Url.Action("UpdateProfile", "Authentication")"
+                                                 method="post" id="updateProfile">
+                                                    <div class="row">
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="first_name" class="form-label">
+                                                                    First
+                                                                    Name
+                                                                </label>
+                                                                <input type="text" class="form-control" id="first_name"
+                                                                        name="first_name"
+                                                                       placeholder="Enter your firstname" value="@ViewBag.FirstName">
+                                                            </div>
                                                         </div>
+                                                        <!--end col-->
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="lastnameInput" class="form-label">
+                                                                    Last
+                                                                    Name
+                                                                </label>
+                                                                <input type="text" class="form-control" id="lastnameInput"
+                                                                        name="last_name"
+                                                                       placeholder="Enter your lastname" value="@ViewBag.Lastname">
+                                                            </div>
+                                                        </div>
+                                                        <!--end col-->
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="phonenumberInput" class="form-label">
+                                                                    Phone
+                                                                    Number
+                                                                </label>
+                                                                <input type="number"
+                                                                         name="phone"   
+                                                                 class="form-control"
+                                                                       id="phonenumberInput"
+                                                                       placeholder="Enter your phone number"
+                                                                       value="@ViewBag.Contact">
+                                                            </div>
+                                                        </div>
+                                                        <!--end col-->
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="emailInput" class="form-label">
+                                                                    Email
+                                                                    Address
+                                                                </label>
+                                                                <input type="email" 
+                                                                    name="email"
+                                                                class="form-control" id="emailInput"
+                                                                       placeholder="Enter your email"
+                                                                       value="@ViewBag.Email">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="cgpa" class="form-label">
+                                                                    CGPA
+                                                                </label>
+                                                                <input type="text" 
+                                                                name="cgpa"
+                                                                class="form-control"
+                                                                disabled='@(ViewBag.Approved == "1" || ViewBag.Approved == "2")'
+                                                                id="cgpa"
+                                                                       placeholder="Enter your gcgpa"
+                                                                       value="@ViewBag.CGPA">
+                                                            </div>
+                                                        </div>    
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="marks9" class="form-label">
+                                                                    9 Marks
+                                                                </label>
+                                                                <input type="text" class="form-control"         
+                                                                id="marks9"
+                                                                disabled='@(ViewBag.Approved == "1" || ViewBag.Approved == "2")'
+                                                                        name="marks9"
+                                                                       placeholder="Enter your Standard 9 Marks" value="@ViewBag.MARKS9">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="marks10" class="form-label">
+                                                                    10 Marks
+                                                                </label>
+                                                                <input type="text" class="form-control" id="marks10" name="marks10"
+                                                                disabled='@(ViewBag.Approved == "1" || ViewBag.Approved == "2")'
+                                                                       placeholder="Enter your Standard 10 Marks" value="@ViewBag.MARKS10">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="number" class="form-label">
+                                                                    11 Marks
+                                                                </label>
+                                                                <input type="text" class="form-control" id="marks11"
+                                                                        name="marks11"
+                                                                         disabled='@(ViewBag.Approved == "1" || ViewBag.Approved == "2")'
+                                                                       placeholder="Enter your Standard 11 Marks" value="@ViewBag.MARKS11">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <div class="mb-3">
+                                                                <label for="marks12" class="form-label">
+                                                                    12 Marks
+                                                                </label>
+                                                                <input type="text" class="form-control" id="marks12"
+                                                                        name="marks12"
+                                                                         disabled='@(ViewBag.Approved == "1" || ViewBag.Approved == "2")'
+                                                                       placeholder="Enter your Standard 12 Marks" value="@ViewBag.MARKS12">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="is_approved" class="form-label">
+                                                                    Status
+                                                                </label>
+                                                                <input type="text" class="form-control" id="is_approved"
+                                                                disabled="true"
+                                                                        name="fenil"
+                                                                       placeholder="Enter your status" value="@ViewBag.IsApproved">
+                                                            </div>
+                                                        </div>
+                                                        @* hidden field for the isApproved *@
+                                                        <div class="col-lg-12">
+                                                            <div class="text-end">
+                                                                <button type="submit" class="btn btn-success">
+                                                                    Update
+                                                                    Details
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <!--end col-->
                                                     </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="lastnameInput" class="form-label">
-                                                                Last
-                                                                Name
-                                                            </label>
-                                                            <input type="text" class="form-control" id="lastnameInput"
-                                                                    name="last_name"
-                                                                   placeholder="Enter your lastname" value="@ViewBag.Lastname">
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="phonenumberInput" class="form-label">
-                                                                Phone
-                                                                Number
-                                                            </label>
-                                                            <input type="number"
-                                                                     name="phone"   
-                                                             class="form-control"
-                                                                   id="phonenumberInput"
-                                                                   placeholder="Enter your phone number"
-                                                                   value="@ViewBag.Contact">
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="emailInput" class="form-label">
-                                                                Email
-                                                                Address
-                                                            </label>
-                                                            <input type="email" 
-                                                                name="email"
-                                                            class="form-control" id="emailInput"
-                                                                   placeholder="Enter your email"
-                                                                   value="@ViewBag.Email">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="cgpa" class="form-label">
-                                                                CGPA
-                                                            </label>
-                                                            <input type="text" 
-                                                            name="cgpa"
-                                                            class="form-control"
-                                                                   placeholder="Enter your gcgpa"
-                                                                   value="@ViewBag.CGPA">
-                                                        </div>
-                                                    </div>    
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="marks9" class="form-label">
-                                                                9 Marks
-                                                            </label>
-                                                            <input type="text" class="form-control" id="marks9"
-                                                                    name="marks9"
-                                                                   placeholder="Enter your Standard 9 Marks" value="@ViewBag.MARKS9">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="marks10" class="form-label">
-                                                                10 Marks
-                                                            </label>
-                                                            <input type="text" class="form-control" id="marks10" name="marks10"
-                                                                   placeholder="Enter your Standard 10 Marks" value="@ViewBag.MARKS10">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="number" class="form-label">
-                                                                11 Marks
-                                                            </label>
-                                                            <input type="text" class="form-control" id="marks11"
-                                                                    name="marks11"
-                                                                   placeholder="Enter your Standard 11 Marks" value="@ViewBag.MARKS11">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-6">
-                                                        <div class="mb-3">
-                                                            <label for="marks12" class="form-label">
-                                                                12 Marks
-                                                            </label>
-                                                            <input type="text" class="form-control" id="marks12"
-                                                                    name="marks12"
-                                                                   placeholder="Enter your Standard 12 Marks" value="@ViewBag.MARKS12">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-12">
-                                                        <div class="text-end">
-                                                            <button type="submit" class="btn btn-success">
-                                                                Update
-                                                                Details
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <!--end col-->
-                                                </div>
-                                                <!--end row-->
-                                            </form>
-                                        </div>
+                                                    <!--end row-->
+                                                </form>
+                                            </div>
                                         }
                                         <!--end tab-pane-->
                                         <div class="tab-pane active" id="changePassword" role="tabpanel">
@@ -267,13 +314,12 @@
             var error = "@(ViewBag.Error)";
             if (error) {
                 toastr.error(error);
-                @(ViewBag.Error = null)
+        @(ViewBag.Error = null)
             }
-
-            var success = "@(ViewBag.Success)";
-            if (success) {
+        var success = "@(ViewBag.Success)";
+        if (success) {
                 toastr.success(success);
-                @(ViewBag.Success = null)
+        @(ViewBag.Success = null)
             }
         });
         $('#updateProfile').submit(function(e){
@@ -305,8 +351,9 @@
                     toastr.error("Phone number should contain only 10 digits");
                     return;
                 }
-                if (cgpa >= 10) {
-                    toastr.error("CGPA should be under or equal to 10");
+                const cgpaRegex = /^[0-9]{1,2}(\.[0-9]{1,2})?$/;
+                if (!cgpaRegex.test(cgpa)) {
+                    toastr.error("CGPA should be in format 0-10");
                     return;
                 }
                 const marksRegex = /^[0-9]{1,3}$/;

@@ -136,7 +136,7 @@ namespace TPS.Controllers
             }
             dr.Close();
             // now insert student profile
-            SqlCommand cmd2 = new SqlCommand("insert into StudentProfile (id,enro,fname,lname,email,contact_no) values (@id , @enro , @fname , @lname , @email , @contact_no)", db.conn);
+            SqlCommand cmd2 = new SqlCommand("insert into StudentProfile (id,enro,fname,lname,email,contact_no,is_approved) values (@id , @enro , @fname , @lname , @email , @contact_no , @is_approved)", db.conn);
             cmd2.Parameters.AddWithValue("@id", id);
             cmd2.Parameters.AddWithValue("@enro", e_no);
             cmd2.Parameters.AddWithValue("@fname", first_name);
@@ -274,7 +274,8 @@ namespace TPS.Controllers
                 return RedirectToAction("SignIn", "Authentication");
             }
             db.open();
-            SqlCommand cmd = new SqlCommand("select * from StudentProfile", db.conn);
+            // select the student where the cgpa and marks are not null
+            SqlCommand cmd = new SqlCommand("select * from StudentProfile where CGPA is not null and marks9 is not null and marks10 is not null and marks11 is not null and marks12 is not null", db.conn);
             SqlDataReader dr = cmd.ExecuteReader();
             List<Student> students = new List<Student>();
             while (dr.Read())
@@ -485,7 +486,7 @@ namespace TPS.Controllers
         [ActionName("UpdatePassword")]
         public IActionResult UpdatePassword(string username, string password, string con_password)
         {
-            if(string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(username))
             {
                 ViewBag.Error = "Unauthorised Access!";
                 return View("PasswordChange");
@@ -569,13 +570,14 @@ namespace TPS.Controllers
                     ViewBag.MARKS10 = dr["MARKS10"].ToString();
                     ViewBag.MARKS11 = dr["MARKS11"].ToString();
                     ViewBag.MARKS12 = dr["MARKS12"].ToString();
+                    ViewBag.IsApproved = dr["is_approved"].ToString();
                 }
             }
             return View();
         }
 
         [ActionName("UpdateProfile")]
-        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa, string marks9, string marks10, string marks11, string marks12)
+        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa, string marks9, string marks10, string marks11, string marks12,string     is_approved)
         {
             // check that user is logged in or not
             ISession session = HttpContext.Session;
@@ -583,15 +585,9 @@ namespace TPS.Controllers
             {
                 return RedirectToAction("SignIn", "Authentication");
             }
-            // check that fields are not empty
-            // if (string.IsNullOrEmpty(first_name) || string.IsNullOrEmpty(last_name) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phone) || string.IsNullOrEmpty(cgpa) || string.IsNullOrEmpty(marks9) || string.IsNullOrEmpty(marks10) || string.IsNullOrEmpty(marks11) || string.IsNullOrEmpty(marks12))
-            // {
-            //     ViewBag.Error = "Please fillup all the details.";
-            //     return View("Profile");
-            // }
             string username = session.GetString("username");
             db.open();
-            SqlCommand cmd = new SqlCommand("update StudentProfile set fname = @fname , lname = @lname , email = @email , contact_no = @contact_no , CGPA = @CGPA, marks9 = @marks9, marks10 = @marks10, marks11 = @marks11, marks12 = @marks12 where id = (select id from users where username = @username)", db.conn);
+            SqlCommand cmd = new SqlCommand("update StudentProfile set fname = @fname , lname = @lname , email = @email , contact_no = @contact_no , CGPA = @CGPA, marks9 = @marks9, marks10 = @marks10, marks11 = @marks11, marks12 = @marks12, is_approved = @is_approved where id = (select id from users where username = @username)", db.conn);
             cmd.Parameters.AddWithValue("@fname", first_name);
             cmd.Parameters.AddWithValue("@lname", last_name);
             cmd.Parameters.AddWithValue("@email", email);
@@ -602,9 +598,25 @@ namespace TPS.Controllers
             cmd.Parameters.AddWithValue("@marks10", marks10);
             cmd.Parameters.AddWithValue("@marks11", marks11);
             cmd.Parameters.AddWithValue("@marks12", marks12);
+            // if is_approved is not null then set it to 0
+            if (string.IsNullOrEmpty(is_approved))
+            {
+                cmd.Parameters.AddWithValue("@is_approved", 0);
+            }
+            else
+            {
+                // if the user id_approved is 3 then set it to 4
+                if (is_approved == "3")
+                {
+                    cmd.Parameters.AddWithValue("@is_approved", 4);
+                }
+                else
+                {
+                    cmd.Parameters.AddWithValue("@is_approved", is_approved);
+                }
+            }
             cmd.ExecuteNonQuery();
-            // set success message
-            ViewBag.Success = "Profile has been updated.";
+            ViewBag.Success = "Profile has been updated and waiting for approval.";
             return RedirectToAction("Profile", "Authentication");
         }
 

@@ -96,9 +96,11 @@
                                                             {
                                                                 <span class="badge bg-danger">Rejected</span>
                                                             }
-                                                            else
+                                                            else if (item.IsApproved == "3")
                                                             {
                                                                 <span class="badge bg-info">Improvment Needed</span>
+                                                            }else{
+                                                                <span class="badge bg-warning">Applied For Improvment</span>
                                                             }
                                                         </td>
                                                         @* <td>
