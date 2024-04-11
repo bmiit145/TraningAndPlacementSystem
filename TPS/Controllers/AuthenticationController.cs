@@ -92,6 +92,19 @@ namespace TPS.Controllers
                     }
                     else
                     {
+                        // store student id in session
+                        db.close();
+                        db.open();
+                        SqlCommand cmd1 = new SqlCommand("select id from users where username = @username", db.conn);
+                        cmd1.Parameters.AddWithValue("@username", username);
+                        SqlDataReader dr1 = cmd1.ExecuteReader();
+                        if (dr1.HasRows)
+                        {
+                            while (dr1.Read())
+                            {
+                                session.SetString("id", dr1["id"].ToString());
+                            }
+                        }
                         return RedirectToAction("Index", "Student");
                     }
                 }
@@ -573,11 +586,44 @@ namespace TPS.Controllers
                     ViewBag.IsApproved = dr["is_approved"].ToString();
                 }
             }
+            dr.Close();
+            // get the student id from the session
+            int student_id = Convert.ToInt32(HttpContext.Session.GetString("id"));
+            // get all the applied interviews for the student with status,remarks and interview details
+            SqlCommand sqlCommand = new SqlCommand("SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,ch.id,hp.program_name FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id WHERE si.student_id = @student_id", db.conn);
+            sqlCommand.Parameters.AddWithValue("@student_id", student_id);
+            SqlDataReader reader = sqlCommand.ExecuteReader();
+            List<InterViewListStudent> tempInterViewDetails = new List<InterViewListStudent>();
+            while (reader.Read())
+            {
+                InterViewListStudent tempAppliedWithStatus = new()
+                {
+                    // Id = reader.GetInt32(0),
+                    // Status = reader.GetInt32(1),
+                    // Remark = reader.GetString(2),
+                    // Interview_id = reader.GetInt32(3),
+                    // Company_id = reader.GetInt32(4),
+                    // Company_name = reader.GetString(5),
+                    // Company_hiring_id = reader.GetInt32(9),
+                    // Program_name = reader.GetString(10),
+                    Id = reader.GetInt32(0),
+                    Status = reader.GetInt32(1),
+                    Remark = reader.GetString(2),
+                    Interview_id = reader.GetInt32(3),
+                    Company_id = reader.GetInt32(4),
+                    Company_name = reader.GetString(5),
+                    Company_hiring_id = reader.GetInt32(6),
+                    Program_name = reader.GetString(7)
+                };
+                tempInterViewDetails.Add(tempAppliedWithStatus);
+            }
+            ViewBag.AppliedInterviews = tempInterViewDetails;
+            reader.Close();
             return View();
         }
 
         [ActionName("UpdateProfile")]
-        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa, string marks9, string marks10, string marks11, string marks12,string     is_approved)
+        public ActionResult UpdateProfile(string first_name, string last_name, string email, string phone, string cgpa, string marks9, string marks10, string marks11, string marks12, string is_approved)
         {
             // check that user is logged in or not
             ISession session = HttpContext.Session;
@@ -706,6 +752,18 @@ namespace TPS.Controllers
         {
             return View();
         }
+    }
+
+    internal class InterViewListStudent
+    {
+        public int Id { get; set; }
+        public int Status { get; set; }
+        public string Remark { get; set; }
+        public int Interview_id { get; set; }
+        public int Company_id { get; set; }
+        public string Company_name { get; set; }
+        public int Company_hiring_id { get; set; }
+        public string Program_name { get; set; }
     }
 
     internal class Student

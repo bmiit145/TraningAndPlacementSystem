@@ -433,6 +433,57 @@ namespace TPS.Controllers
             reader.Close();
             return View("InterviewDetails");
         }
+        // ApplyInterviewStudent
+        [ActionName("ApplyInterviewStudent")]
+        public IActionResult ApplyInterviewStudent(int id)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+// CREATE TABLE [dbo].[StudentInterview] (
+//     [id]           INT           IDENTITY (1, 1) NOT NULL,
+//     [student_id]   INT           NULL,
+//     [interview_id] INT           NULL,
+//     [status]       INT           NULL,
+//     [remark]       VARCHAR (255) NULL,
+//     CONSTRAINT [PK_StudentInterview] PRIMARY KEY CLUSTERED ([id] ASC),
+//     FOREIGN KEY ([interview_id]) REFERENCES [dbo].[Interview] ([interview_id]),
+//     FOREIGN KEY ([student_id]) REFERENCES [dbo].[StudentProfile] ([id])
+// );
+            // get the student id from the session
+            int student_id = Convert.ToInt32(HttpContext.Session.GetString("id"));
+            // check if the student has already applied for the interview
+            SqlCommand checkCommand = new SqlCommand("SELECT COUNT(*) FROM StudentInterview WHERE student_id = @student_id AND interview_id = @interview_id", db.conn);
+            checkCommand.Parameters.AddWithValue("@student_id", student_id);
+            checkCommand.Parameters.AddWithValue("@interview_id", id);
+            int count = (int)checkCommand.ExecuteScalar();
+            if (count > 0)
+            {
+                ViewBag.Error = "You have already applied for this interview";
+                return RedirectToAction("Profile", "Authentication");
+            }
+            SqlCommand command = new SqlCommand("INSERT INTO StudentInterview (student_id,interview_id,status) VALUES (@student_id,@interview_id,0)", db.conn);
+            command.Parameters.AddWithValue("@student_id", student_id);
+            command.Parameters.AddWithValue("@interview_id", Convert.ToInt32(id));
+            command.ExecuteNonQuery();
+            ViewBag.Success = "You have successfully applied for the interview";
+            return RedirectToAction("Profile", "Authentication");
+        }
+
+        [ActionName("AppliedInterviewsStudent")]
+        public IActionResult AppliedInterviewsStudent()
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            // Id, Status, Remark, Interview_id, Company_id, Company_name, Company_hiring_id, Program_name
+            // SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,ch.id,hp.program_name FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id WHERE si.student_id = @student_id
+            return View("AppliedInterviewsStudent");
+        }
 
         internal class Interview
         {
@@ -445,6 +496,26 @@ namespace TPS.Controllers
             public string Venue { get; set; }
             public int Company_hiring_id { get; set; }
         }
+    }
+
+    internal class TempAppliedWithStatus
+    {
+        public int Id { get; set; }
+        public int Status { get; set; }
+        public string Remark { get; set; }
+        public int Interview_id { get; set; }
+        public int Company_id { get; set; }
+        public string Company_name { get; set; }
+        public DateOnly Interview_date { get; set; }
+        public TimeSpan Interview_time { get; set; }
+        public string Venue { get; set; }
+        public int Company_hiring_id { get; set; }
+        public string Program_name { get; set; }
+        public string Description { get; set; }
+        public DateTime Start_date { get; set; }
+        public DateTime End_date { get; set; }
+        public string Course_name { get; set; }
+        public int Course_id { get; set; }
     }
 
     internal class TempInterViewDetails
