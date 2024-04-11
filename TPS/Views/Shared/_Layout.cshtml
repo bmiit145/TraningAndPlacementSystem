@@ -1,10 +1,28 @@
-﻿<!doctype html>
+﻿
+@{
+    ViewBag.Title = "Training And Placement Cell";
+    Layout = null;
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+<!doctype html>
 <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 <head>
     @Html.Partial("~/Views/Shared/_title_meta.cshtml")
     @RenderSection("styles", required: false)
     @Html.Partial("~/Views/Shared/_head_css.cshtml")
-
+    <style>
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+     
+    <!-- Include CSS for toast notifications -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </head>
 <body>
     <!-- Begin page -->
@@ -33,10 +51,7 @@
     @Html.Partial("~/Views/Shared/_vendor_scripts.cshtml")
 
     @RenderSection("scripts", required: false)
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-
+    
     <script>
         // Check if ViewBag.Error is present and show toast message
         $(document).ready(function(){

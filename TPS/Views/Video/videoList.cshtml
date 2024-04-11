@@ -1,0 +1,366 @@
+@{
+    ViewBag.Title = "Videos | Training And Placement Cell";
+    ViewBag.pTitle = "Dashboard";
+    ViewBag.pageTitle = "Videos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    ISession session = HttpContextAccessor.HttpContext.Session;
+}
+
+@section styles {
+    <!-- jsvectormap css -->
+    <link href="~/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
+
+    <!--Swiper slider css-->
+    <link href="~/assets/libs/swiper/swiper-bundle.min.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="row">
+    <div class="col-md-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Add New Video</h4>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <p>@ViewBag.Error</p>
+                    </div>
+                }
+                <div class="p-3">
+                    @if(ViewBag.Video == null){
+                    <form action="@Url.Action("AddOrEditVideo", "Video")" method="post" class="form" id="videoForm">
+                    
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Video Link</label>
+                            <input type="text" name="link" class="form-control" id="link"
+                                placeholder="Enter Valid Youtube Video Link">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Title" class="form-label">Title</label>
+                            <input type="text" name="title" class="form-control" id="title"
+                                placeholder="Title Of Youtube Video">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check-label">Choose an option:</label><br />
+                            <input type="checkbox" id="optedInPlaylist" name="optedInPlaylist"
+                                onchange="toggleSelection()">
+                            <label for="optedInPlaylist">Opted in Playlist</label>
+                        </div>
+                        <div class="mb-3" id="courseSelection">
+                            <label for="course" class="form-label">Course</label>
+                            @if (ViewBag.Courses == null || ViewBag.Courses.Count == 0)
+                            {
+                                <p>No courses found. Please <a href="@Url.Action("AddCourse", "Course")">add a course</a>.
+                                </p>
+                            }
+                            else
+                            {
+                                <select class="form-select" name="course" id="course">
+                                    <option value="-1">Select Course</option>
+                                    @foreach (var item in ViewBag.Courses)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <div class="mb-3" id="playlistSelection">
+                            <label for="playlist" class="form-label">Playlist</label>
+                            @if (ViewBag.Playlists == null || ViewBag.Playlists.Count == 0)
+                            {
+                                <p>No playlists found. Please <a href="@Url.Action("Playlist", "video")">add a playlist</a>.
+                                </p>
+                            }
+                            else
+                            {
+                                <select class="form-select" name="playlist" id="playlist">
+                                    <option value="-1">Select Playlist</option>
+                                    @foreach (var item in ViewBag.Playlists)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                    </form>
+                    }else{
+                    <form action="@Url.Action("AddOrEditVideo", "Video")" method="post" class="form" id="videoForm">
+                            <input type="hidden" name="id" value="@ViewBag.Video.ID" />
+                        
+                        <div class="mb-3">
+                            <label for="link" class="form-label">Video Link</label>
+                            <input type="text" name="link" class="form-control" id="link"
+                                placeholder="Enter Valid Youtube Video Link" value="https://www.youtube.com/watch?v=@ViewBag.Video.link">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Title" class="form-label">Title</label>
+                            <input type="text" name="title" class="form-control" id="title"
+                                placeholder="Title Of Youtube Video" value="@ViewBag.Video.title">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-check label">Choose an option:</label><br />
+                            <input type="checkbox" id="optedInPlaylist" name="optedInPlaylist"
+                                onchange="toggleSelection()" @if(ViewBag.Video.playlistID > 0){<text>checked</text>}>
+                            <label for="optedInPlaylist">Opted in Playlist</label>
+                        </div>
+                        <div class="mb-3" id="courseSelection">
+                            <label for="course" class="form-label">Course</label>
+                            @if (ViewBag.Courses == null || ViewBag.Courses.Count == 0)
+                            {
+                                <p>No courses found. Please <a href="@Url.Action("AddCourse", "Course")">add a course</a>.
+                                </p>
+                            }
+                            else
+                            {
+                                <select class="form-select" name="course" id="course">
+                                    <option value="-1">Select Course</option>
+                                    @foreach (var item in ViewBag.Courses)
+                                    {
+                                        <option value="@item.ID" >@item.Name</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <div class="mb-3" id="playlistSelection">
+                            <label for="playlist" class="form-label">Playlist</label>
+                            @if (ViewBag.Playlists == null || ViewBag.Playlists.Count == 0)
+                            {
+                                <p>No playlists found. Please <a href="@Url.Action("Playlist", "video")">add a playlist</a>.
+                                </p>
+                            }
+                            else
+                            {
+                                <select class="form-select" name="playlist" id="playlist">
+                                    <option value="-1">Select Playlist</option>
+                                    @foreach (var item in ViewBag.Playlists)
+                                    {
+                                        <option value="@item.ID">@item.Name</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Edit</button>
+                    </form>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-12 col-lg-6">
+        <div id="youtubePreview" class="mt-3"></div>
+    </div>
+</div>
+ <!-- end row -->
+ <!-- View in table format -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Videos</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-centered table-nowrap mb-0">
+                        <thead>
+                            <tr>
+                                <th>Video</th>
+                                <th>Title</th>
+                                <th>Course</th>
+                                <th>Playlist</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Videos != null && ViewBag.Videos.Count > 0)
+                            {
+                                foreach (var item in ViewBag.Videos)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="https://i.ytimg.com/vi/@item.link/maxresdefault.jpg" alt="@item.title" style="max-width: 100px; height: auto;">
+                                        </td>
+                                        <td>@item.title</td>
+                                        <td>@item.courseName</td>
+                                        <td>@item.playlistName</td>
+                                        <td>
+                                            <a href="@Url.Action("VideoList", "Video", new { id = item.ID })" class="btn btn-primary btn-sm">Edit</a>
+                                            <a href="@Url.Action("DeleteVideo", "Video", new { id = item.ID })" class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5">No videos found.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <!-- apexcharts -->
+    <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <!-- Vector map-->
+    <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+    <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
+
+    <!--Swiper slider js-->
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Dashboard init -->
+    <script src="~/assets/js/pages/dashboard-ecommerce.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+}
+<script src="~/assets/js/youtubeVideo.js"></script>
+<script>
+    toggleSelection();
+    function toggleSelection() {
+        var isChecked = $('#optedInPlaylist').prop('checked');
+        if (isChecked) {
+            $('#courseSelection').hide();
+            $('#playlistSelection').show();
+        } else {
+            $('#courseSelection').show();
+            $('#playlistSelection').hide();
+        }
+    }
+    $(document).ready(function () {
+        $('#optedInPlaylist').change(function () {
+            if (this.checked) {
+                $('#courseSelection').hide();
+                $('#playlistSelection').show();
+            } else {
+                $('#courseSelection').show();
+                $('#playlistSelection').hide();
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $.validator.addMethod("courseOrPlaylistSelected", function (value, element) {
+            var optedInPlaylist = $("#optedInPlaylist").prop("checked");
+            if (optedInPlaylist) {
+                var playlistValue = $("#playlist").val();
+                return playlistValue !== "-1";
+            } else {
+                var courseValue = $("#course").val();
+                return courseValue !== "-1";
+            }
+        }, "Please select either a course or a playlist.");
+
+        // Custom method to validate YouTube URL using YouTube Data API
+        $.validator.addMethod("youtubeURL", function (value, element) {
+            var youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            return this.optional(element) || youtubeRegex.test(value);
+        }, "Please enter a valid YouTube video link.");
+
+
+
+        $("#videoForm").validate({
+            rules: {
+                link: {
+                    required: true,
+                    url: true,
+                    youtubeURL: true
+                },
+                title: "required",
+                course: {
+                    required: function (element) {
+                        return $("#optedInPlaylist").prop("checked");
+                    },
+                    courseOrPlaylistSelected: true
+                },
+                playlist: {
+                    required: function (element) {
+                        return $("#optedInPlaylist").prop("checked");
+                    },
+                    courseOrPlaylistSelected: true
+                }
+            },
+            messages: {
+                link: {
+                    required: "Please enter a YouTube video link.",
+                    url: "Please enter a valid URL.",
+                    youtubeURL: "Please enter a valid YouTube video link."
+                },
+                title: "Please enter the title of the video.",
+                course: "Please select a course.",
+                playlist: "Please select a playlist."
+            },
+            submitHandler: function (form) {
+
+                var optedInPlaylist = $("#optedInPlaylist").prop("checked");
+                var courseVisible = $("#course").is(":visible");
+                var playlistVisible = $("#playlist").is(":visible");
+
+                if ((optedInPlaylist && playlistVisible) || (!optedInPlaylist && courseVisible)) {
+                   form.submit();
+                } else {
+                    toastr.error("Please select either a course or a playlist.");
+                }
+
+            }
+        });
+
+
+
+        // Display YouTube video preview if link is valid
+        function extractVideoId(url) {
+            var match = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return match ? match[1] : null;
+        }
+
+        $("#link").on('input', function () {
+            var link = $(this).val();
+            if (isValidYouTubeUrl(link)) {
+                var videoId = extractVideoId(link);
+                if (videoId) {
+                    getYouTubeVideoInfo(link, function (error, data) {
+                        if (!error) {
+                            var videoTitle = data.snippet.title;
+                            var videoThumbnail = "https://i.ytimg.com/vi/" + videoId + "/maxresdefault.jpg";
+                            $("#title").val(videoTitle);
+                            $("#youtubePreview").html("<img src='" + videoThumbnail + "' alt='" + videoTitle + "' style='max-width: 100%; height: auto;'>");
+                            $("#submitBtn").prop("disabled", false); // Enable submit button
+                        } else {
+                            // Handle error
+                            $("#youtubePreview").html("");
+                            $("#submitBtn").prop("disabled", true);
+                            toastr.error("Error fetching video information. Please try again later.");
+                        }
+                    });
+                } else {
+                    // Clear preview and disable submit button for invalid video ID
+                    $("#youtubePreview").html("");
+                    $("#submitBtn").prop("disabled", true);
+                }
+            } else {
+                // Clear preview and disable submit button for invalid URL
+                $("#youtubePreview").html("");
+                $("#submitBtn").prop("disabled", true);
+            }
+        });
+
+
+
+    });
+
+</script>
