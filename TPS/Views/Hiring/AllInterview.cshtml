@@ -1,0 +1,154 @@
+@{
+    ViewBag.Title = "Manager Interview";
+    ViewBag.pTitle = "Manager Interview";
+    ViewBag.pageTitle = "Manager Interview";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+                                            <!--datatable css-->
+                                            <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+                                            <!--datatable responsive css-->
+                                            <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
+
+                                            <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+}
+@* check that there is a message *@
+@if (ViewBag.Message != null)
+{
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            <strong>Success!</strong> @ViewBag.Message
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+}
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        Add Interview
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="@Url.Action("addInterview", "Hiring")">
+                                        <input type="hidden" name="id" id="id" value="@ViewBag.Id" />
+                                        <input type="hidden" name="edit" id="edit" value="@ViewBag.Edit" />
+                                        <div class="form-group mb-3">
+                                            <label for="company_hiring_id">Company Hiring</label>
+                                            <select class="form-select" name="company_hiring_id" id="company_hiring_id" required>
+                                                <option value="">Select Company Hiring</option>
+                                                @foreach (var item in ViewBag.CompanyHirings)
+                                                {
+                                                    <option value="@item.Id">
+                                                        @item.Company_name - @item.Hiring_name
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="interview_date">Interview Date</label>
+                                            <input type="date" class="form-control" name="interview_date" id="interview_date" required />
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="interview_time">Interview Time</label>
+                                            <input type="time" class="form-control" name="interview_time" id="interview_time" required />
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="venue">Venue</label>
+                                            <input type="text" class="form-control" name="venue" id="venue" required />
+                                        </div>
+                                        <button type="submit" id="action-text" class="btn btn-primary">Add Interview</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        Interview List
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <table id="scroll-horizontal" class="table nowrap align-middle" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Company Name</th>
+                                                <th>Hiring Program</th>
+                                                <th>Interview date</th>
+                                                <th>Interview time</th>
+                                                <th>Venue</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                @foreach (var item in ViewBag.Interviews)
+                                                {
+                                                    <tr>
+                                                        <td>@item.Id</td>
+                                                        <td>@item.Company_name</td>
+                                                        <td>@item.Hiring_name</td>
+                                                        <td>@item.Interview_date</td>
+                                                        <td
+                                                            class="remove-unwanted-time"
+                                                        >@item.Interview_time</td>
+                                                        <td>@item.Venue</td>
+                                                        <td>
+                                                            <button
+                                                                onclick="
+                                                                @* set the values *@
+                                                                $('#id').val('@item.Id');
+                                                                $('#company_hiring_id').val('@item.Company_hiring_id');
+                                                                $('#interview_date').val('@item.Interview_date');
+                                                                $('#interview_time').val('@item.Interview_time');
+                                                                $('#venue').val('@item.Venue');
+                                                                $('#edit').val('true');
+                                                                $('#action-text').text('Update Interview');
+                                                                "
+                                                                type="button" class="btn btn-primary btn-sm">
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <form method="post" action="@Url.Action("deleteInterview", "Hiring")">
+                                                                <input type="hidden" name="id" value="@item.Id" />
+                                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                                    Delete
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+@section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    $(document).ready(function () {
+        @* remove the time from the date *@
+        $(".remove-unwanted-time").each(function () {
+            var date = $(this).text();
+            var newDate = date.split(" ")[0];
+            $(this).text(newDate);
+        });
+    });
+    <!--datatable js-->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+}
