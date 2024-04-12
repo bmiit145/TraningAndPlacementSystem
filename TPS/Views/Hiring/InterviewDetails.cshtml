@@ -66,6 +66,19 @@
                     </span>
                     @ViewBag.InterviewDetails.Interview_time
                 </p>
+                <p class="card-text">
+                    <span style="font-weight: bold;">
+                        Interview Status:
+                    </span>
+                    @if (ViewBag.InterviewDetails.Interview_status == 1)
+                    {
+                        <span class="badge bg-success">Closed</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Open</span>
+                    }
+                </p>
             </div>
         </div>
     </div>
@@ -143,12 +156,14 @@
                     Actions
                 </h5> 
             </div>
-            <div class="card-body" style="display: flex; justify-content: center; gap:10px;">
-                <a href="@Url.Action("AllCompaniesStudent", "Company")" class="btn btn-primary">Back</a>
+            <div class="card-body" style="display: flex; align-item: center; gap:10px;">
+                <a href="@Url.Action("InterviewsStudent", "Hiring")" class="btn btn-primary">Back</a>
                 @* apply button *@
                 <form method="post" action="@Url.Action("ApplyInterviewStudent", "Hiring")">
                     <input type="hidden" name="id" id="id" value="@ViewBag.InterviewDetails.Interview_id" />
-                    <button type="submit" class="btn btn-primary">Apply</button>
+                    <button type="submit" class="btn btn-primary"
+                        disabled="@ViewBag.InterviewDetails.Interview_status == 1 ? true : false"
+                    >Apply</button>
                 </form>
             </div>
         </div>

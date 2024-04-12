@@ -242,7 +242,7 @@ namespace TPS.Controllers
       ,[venue]
   FROM [dbo].[Interview] */
             // write a join that get interview_id,company_hiring_id, company name, hiring program name, interview date, interview time, venue
-            SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id", db.conn);
+            SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,i.interview_status FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id", db.conn);
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
             List<Interview> interviews = new List<Interview>();
             while (sqlDataReader.Read())
@@ -256,7 +256,9 @@ namespace TPS.Controllers
                     Interview_date = DateOnly.FromDateTime(sqlDataReader.GetDateTime(3)),
                     Interview_time = sqlDataReader.GetTimeSpan(4),
                     Venue = sqlDataReader.GetString(5),
-                    Company_hiring_id = sqlDataReader.GetInt32(6)
+                    Company_hiring_id = sqlDataReader.GetInt32(6),
+                    // check for null
+                    Interview_status = sqlDataReader.IsDBNull(7) ? 0 : sqlDataReader.GetInt32(7)
                 };
                 interviews.Add(interview);
             }
@@ -281,7 +283,7 @@ namespace TPS.Controllers
             return View("AllInterview");
         }
         // addInterview
-        public ActionResult addInterview(int company_hiring_id, DateTime interview_date, DateTime interview_time, string venue, string id, string edit)
+        public ActionResult addInterview(int company_hiring_id, DateTime interview_date, DateTime interview_time, string venue, string id, string edit, int interview_status)
         {
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
             {
@@ -290,26 +292,29 @@ namespace TPS.Controllers
             db.open();
             if (edit == "true")
             {
-                SqlCommand command = new SqlCommand("UPDATE Interview SET company_hiring_id = @company_hiring_id , interview_date = @interview_date , interview_time = @interview_time , venue = @venue WHERE interview_id = @id", db.conn);
+                SqlCommand command = new SqlCommand("UPDATE Interview SET company_hiring_id = @company_hiring_id , interview_date = @interview_date , interview_time = @interview_time , venue = @venue,interview_status=@interview_status WHERE interview_id = @id", db.conn);
                 command.Parameters.AddWithValue("@company_hiring_id", company_hiring_id);
                 command.Parameters.AddWithValue("@interview_date", interview_date);
                 command.Parameters.AddWithValue("@interview_time", interview_time);
                 command.Parameters.AddWithValue("@venue", venue);
+                command.Parameters.AddWithValue("@interview_status", interview_status);
                 command.Parameters.AddWithValue("@id", id);
                 command.ExecuteNonQuery();
                 return RedirectToAction("AllInterview");
             }
             else
             {
-                SqlCommand command = new SqlCommand("INSERT INTO Interview (company_hiring_id,interview_date,interview_time,venue) VALUES (@company_hiring_id,@interview_date,@interview_time,@venue)", db.conn);
+                SqlCommand command = new SqlCommand("INSERT INTO Interview (company_hiring_id,interview_date,interview_time,venue,interview_status) VALUES (@company_hiring_id,@interview_date,@interview_time,@venue,@interview_status)", db.conn);
                 command.Parameters.AddWithValue("@company_hiring_id", company_hiring_id);
                 command.Parameters.AddWithValue("@interview_date", interview_date);
                 command.Parameters.AddWithValue("@interview_time", interview_time);
                 command.Parameters.AddWithValue("@venue", venue);
+                command.Parameters.AddWithValue("@interview_status", interview_status);
                 command.ExecuteNonQuery();
                 return RedirectToAction("AllInterview");
             }
         }
+
         // deleteInterview
         [ActionName("deleteInterview")]
         public IActionResult deleteInterview(string id)
@@ -411,7 +416,7 @@ namespace TPS.Controllers
             }
             db.open();
             // get the all details for the interview using join query so we can show the company details,hiring program details and training program details
-            SqlCommand command = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,hp.description,hp.start_date,hp.end_date,c1.name AS course_name, c1.id AS course_id FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.Courses c1 ON hp.course_id = c1.id WHERE i.interview_id = @id", db.conn);
+            SqlCommand command = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,hp.description,hp.start_date,hp.end_date,c1.name AS course_name, c1.id AS course_id,i.interview_status FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.Courses c1 ON hp.course_id = c1.id WHERE i.interview_id = @id", db.conn);
             command.Parameters.AddWithValue("@id", id);
             SqlDataReader reader = command.ExecuteReader();
             TempInterViewDetails tempInterViewDetails = new TempInterViewDetails();
@@ -430,6 +435,7 @@ namespace TPS.Controllers
                 tempInterViewDetails.End_date = reader.GetDateTime(10);
                 tempInterViewDetails.Course_name = reader.GetString(11);
                 tempInterViewDetails.Course_id = reader.GetInt32(12);
+                tempInterViewDetails.Interview_status = reader.GetInt32(13);
             }
             ViewBag.InterviewDetails = tempInterViewDetails;
             reader.Close();
@@ -748,6 +754,42 @@ namespace TPS.Controllers
             }
         }
 
+        // a list of interviews for the student
+        [ActionName("InterviewsStudent")]
+        public IActionResult InterviewsStudent()
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            // get all the interviews for the student with company name, hiring program name, interview date, interview time, venue
+            SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,i.interview_status FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id", db.conn);
+            SqlDataReader reader = sqlCommand.ExecuteReader();
+            List<TempAppliedWithStatus> tempInterViewDetails = new List<TempAppliedWithStatus>();
+            while (reader.Read())
+            {
+                TempAppliedWithStatus tempAppliedWithStatus = new()
+                {
+                    Id = reader.GetInt32(0),
+                    Interview_id = reader.GetInt32(0),
+                    Company_id = reader.GetInt32(1),
+                    Company_name = reader.GetString(2),
+                    Interview_date = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                    Interview_time = reader.GetTimeSpan(4),
+                    Venue = reader.GetString(5),
+                    Company_hiring_id = reader.GetInt32(6),
+                    Program_name = reader.GetString(7),
+                    // check for null value
+                    Interview_status = reader.IsDBNull(8) ? 0 : reader.GetInt32(8)
+                };
+                tempInterViewDetails.Add(tempAppliedWithStatus);
+            }
+            ViewBag.Interviews = tempInterViewDetails;
+            reader.Close();
+            return View("InterviewsStudent");
+        }
+
         internal class Interview
         {
             public int Id { get; set; }
@@ -758,6 +800,7 @@ namespace TPS.Controllers
             public TimeSpan Interview_time { get; set; }
             public string Venue { get; set; }
             public int Company_hiring_id { get; set; }
+            public int Interview_status { get; set; }
         }
     }
 
@@ -808,6 +851,7 @@ namespace TPS.Controllers
         public string Company_name { get; set; }
         public DateOnly Interview_date { get; set; }
         public TimeSpan Interview_time { get; set; }
+        public int Interview_status { get; set; }
         public string Venue { get; set; }
         public int Company_hiring_id { get; set; }
         public string Program_name { get; set; }
@@ -833,6 +877,7 @@ namespace TPS.Controllers
         public DateTime End_date { get; set; }
         public string Course_name { get; set; }
         public int Course_id { get; set; }
+        public int Interview_status { get; set; }
     }
 
     internal class StudentCompanyHiring
