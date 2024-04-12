@@ -12,7 +12,7 @@
     <link href="~/assets/libs/jsvectormap/css/jsvectormap.min.css" rel="stylesheet" type="text/css" />
     <style>
         /* Style for the video cards */
-        .video-card {
+               .video-card {
             position: relative;
             overflow: hidden;
             border-radius: 10px;
@@ -25,20 +25,19 @@
             height: 100%;
             border: none;
         }
+       .grid-layout-container {
+    margin-bottom: 20px;
+}
 
-        .grid-layout-container {
-            margin-bottom: 20px;
-        }
+.grid-layout-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
 
-        .grid-layout-bar {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 10px;
-        }
-
-        .grid-layout-bar button {
-            margin-right: 10px;
-        }
+.grid-layout-bar button {
+    margin-right: 10px;
+}
     </style>
 
 }
@@ -48,18 +47,19 @@
         <div class="grid-layout-bar">
             <button class="btn" onclick="changeGridLayout('col-md-4')"><i class="fas fa-th-large"></i></button>
             <button class="btn" onclick="changeGridLayout('col-md-3')"><i class="fas fa-th"></i></button>
-            <button class="btn" onclick="changeGridLayout('col-md-6')"><i class="fas fa-th-list"></i></button>
+            @* <button class="btn" onclick="changeGridLayout('col-md-6')"><i class="fas fa-th-list"></i></button> *@
         </div>
 
         @* label to Most Popular Videos *@
         @if (ViewBag.Playlist != null)
         {
-            <div class="d-flex justify-content-space-between mb-4">
+            <div class="d-flex  mb-4" style="justify-content: space-between;">
                 <div class="ms-2">
                         <h4 class="header-title">@ViewBag.playlist.name</h4>
                         <span class="text-muted">@ViewBag.playlist.description</span>
                 </div>
                     <div class="ms-2">
+                        <h4 class="header-title">@ViewBag.playlist.courseName</h4>
                         <span class="text-muted">Total Videos: @ViewBag.playlist.totalVideos</span>
                     </div>
                 
@@ -76,10 +76,9 @@
             {
                 foreach (var video in ViewBag.Pvideos)
                 {
-                    <div class=" col-md-4">
+                    <div class=" col-md-4 p-4">
                         <div class="video-card">
-                            <iframe class="video-iframe" src="https://www.youtube.com/embed/@video.link"
-                                allowfullscreen></iframe>
+                            <iframe class="video-iframe" src="https://www.youtube.com/embed/@video.link" allowfullscreen></iframe>
                         </div>
                     </div>
                 }
@@ -93,7 +92,7 @@
                 </div>
             }
         </div>
-    </div>
+        </div>
 </div>
 
 @section scripts {

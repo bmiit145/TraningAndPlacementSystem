@@ -2,6 +2,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Data.SqlClient;
+using SQLitePCL;
+using TPS.Controllers;
 
 namespace TPS.Models
 {
@@ -24,6 +27,17 @@ namespace TPS.Models
         public int Course_id { get; set; }
 
         public string? Course_name { get; set; }
+
+        public Hiring()
+        {
+            Program_name = "";
+            Description = "";
+            Start_date = DateTime.Now;
+            End_date = DateTime.Now;
+            Course_id = 0;
+            Course_name = "";
+
+        }
     }
 }
 

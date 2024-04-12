@@ -32,7 +32,11 @@ namespace TPS.Models
         DbController db = new DbController();
         SqlCommand cmd;
         db.open();
-        string query = "SELECT * FROM Playlists WHERE ID = @id";
+        string query = "SELECT p.ID, p.Name, p.Description, p.CourseID, p.createdDate , c.Name AS courseName " +
+                       "FROM Playlists p " +
+                       "LEFT JOIN Courses c ON p.CourseID = c.ID " +
+                       " WHERE p.ID = @id " +
+                        " ORDER BY p.ID DESC";
         cmd = new SqlCommand(query, db.conn);
         cmd.Parameters.AddWithValue("@id", id);
         SqlDataReader reader = cmd.ExecuteReader();
@@ -46,6 +50,7 @@ namespace TPS.Models
             if (!reader.IsDBNull(4)){
             playlist.createdDate = reader.GetDateTime(4).ToString("dd-MM-yyyy");
             }
+            playlist.courseName = reader.GetString(5);
             playlist.totalVideos = PlaylistVideo.GetVideoByPlaylist(playlist.ID).Count;
         }
         db.close();

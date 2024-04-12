@@ -61,7 +61,7 @@
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
-                                <div class="d-flex justify-content-between">
+                                <div class="d-flex" style="justify-content: space-between;">
                                     
                                 <h5 class="card-title">@item.name</h5>
                                 @* <strong class="text-muted">@item.createdDate</strong> *@
@@ -75,7 +75,14 @@
                             <div class="card-footer">
                                 <div class="d-flex justify-content-between">
                                 <strong class="text-muted">@item.createdDate</strong>
-                                <a href="@Url.Action("ViewPlaylistVideo", "Student", new { id = item.ID })" class="btn btn-primary">View Playlist</a>
+                                <div>
+                                    <a href="@Url.Action("ViewPlaylistVideo", "Student", new { id = item.ID })" class="btn btn-sm btn-primary">View Playlist</a>
+                
+                                    <form method="post" action="@Url.Action("downloadListCsv", "Video")">
+                                        <input type="hidden" name="playlist" value="@item.ID" />
+                                        <button type="submit" class="btn btn-sm btn-primary">download</button>
+                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>

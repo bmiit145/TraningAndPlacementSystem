@@ -362,7 +362,36 @@ namespace TPS.Controllers
             ViewBag.Success = "Playlist deleted successfully";
             return RedirectToAction("playlist");
         }
+
+
+        [ActionName("downloadListCsv")]
+        public IActionResult downloadListCsv(int? playlist)
+        {
+            // if session is not available then redirect to signin page
+            if (HttpContext.Session.GetString("role") == null)
+            {
+                ViewBag.Error = "You are not authorized to access this page";
+                return RedirectToAction("SignIn", "Authentication");
+            }
+
+            // get all the videos
+            List<PlaylistVideo> videos = PlaylistVideo.GetVideos();
+            if (playlist != null && playlist != -1)
+            {
+                videos = videos.Where(v => v.playlistID == playlist).ToList();
+            }
+
+            // create a csv file and download it
+            string csv = "VideoId,Link,Title,PlaylistName,CourseName\n";
+            foreach (var video in videos)
+            {
+                csv += video.ID + ",https://www.youtube.com/watch?v=" + video.link + "," + video.title + "," + video.playlistName + "," + video.courseName + "\n";
+            }
+            return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "videos.csv");
+        }
+
     }
 
 }
+
 

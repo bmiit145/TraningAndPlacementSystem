@@ -52,6 +52,8 @@ namespace TPS.Controllers
                 return RedirectToAction("SignIn", "Authentication");
             }
 
+
+            ViewBag.Playlists = Playlist.GetPlaylists();
             // get playlist details
             if (id > 0)
             {
