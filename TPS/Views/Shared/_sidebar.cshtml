@@ -49,6 +49,32 @@
                 @if (session.GetString("role") != "0")
                 {
                     <li class="nav-item">
+                        <a class="nav-link menu-link" href="@Url.Action("Index", "Course")">
+                            <i class="mdi mdi-school"></i> <span data-key="t-dashboards">Courses</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-link" href="#sidebarVideo" data-bs-toggle="collapse" role="button"
+                           aria-expanded="false" aria-controls="sidebarVideo">
+                            <i class="mdi mdi-video-high-definition"></i>
+                            <span data-key="t-company">Videos</span>
+                        </a>
+                        <div class="collapse menu-dropdown" id="sidebarVideo">
+                            <ul class="nav nav-sm flex-column">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("VideoList", "Video")" class="nav-link" data-key="t-analytics">
+                                        Videos
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Playlist", "Video")" class="nav-link" data-key="t-crm">
+                                        Playlists
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button"
                            aria-expanded="false" aria-controls="sidebarDashboards">
                             <i class="mdi mdi-office-building-outline"></i>
@@ -106,33 +132,6 @@
                         </span>
                     </a>
                 </li>
-                
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="@Url.Action("Index", "Course")">
-                            <i class="mdi mdi-school"></i> <span data-key="t-dashboards">Courses</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="#sidebarVideo" data-bs-toggle="collapse" role="button"
-                           aria-expanded="false" aria-controls="sidebarVideo">
-                            <i class="mdi mdi-video-high-definition"></i>
-                            <span data-key="t-company">Videos</span>
-                        </a>
-                        <div class="collapse menu-dropdown" id="sidebarVideo">
-                            <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="@Url.Action("VideoList", "Video")" class="nav-link" data-key="t-analytics">
-                                        Videos
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("Playlist", "Video")" class="nav-link" data-key="t-crm">
-                                        Playlists
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
                 }
                 else
                 {
