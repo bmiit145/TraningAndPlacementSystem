@@ -30,7 +30,7 @@
                                     </h5>
                                 </div>
                                 <div class="card-body">
-                                    <form method="post" action="@Url.Action("addInterview", "Hiring")">
+                                    <form method="post" action="@Url.Action("addInterview", "Hiring")" id="addInterviewForm">
                                         <input type="hidden" name="id" id="id" value="@ViewBag.Id" />
                                         <input type="hidden" name="edit" id="edit" value="@ViewBag.Edit" />
                                         <div class="form-group mb-3">
@@ -132,6 +132,23 @@
 
 @section scripts {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script>
+            $("#addInterviewForm").submit(function (e){
+                e.preventDefault();
+                @* check all fields are filled and match the regex *@
+                if ($("#company_hiring_id").val() == "" || $("#interview_date").val() == "" || $("#interview_time").val() == "" || $("#venue").val() == "") {
+                    toastr.error("All fields are required");
+                    return;
+                }
+                var venue = $("#venue").val();
+                var regex = /^[a-zA-Z0-9\s]*$/;
+                if (!regex.test(venue)) {
+                    toastr.error("Venue should be alphanumeric");
+                    return;
+                }
+                $("#addInterviewForm").unbind('submit').submit();
+            })
+        </script>
         <!--datatable js-->
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>

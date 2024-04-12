@@ -165,7 +165,7 @@
                                                 <td>
                                                     <form method="post" action="@Url.Action("AddRemarks", "Hiring")"style= "display: flex; align-items: center; gap: 10px;">
                                                         <input type="hidden" name="id" value="@item.Id" />
-                                                        <input type="text" name="remark" class="form-control" placeholder="Enter Remarks" value="@item.Remark" style="width: 200px;" />
+                                                        <input type="text" name="remark" class="form-control" placeholder="Enter Remarks" value="@item.Remark" style="width: 200px;" required />
                                                         <button type="submit" class="btn btn-primary">Add</button>
                                                     </form>
                                                 </td>

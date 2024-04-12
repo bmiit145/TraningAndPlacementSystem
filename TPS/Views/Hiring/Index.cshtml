@@ -30,7 +30,7 @@
                                     </h5>
                                 </div>
                                 <div class="card-body">
-                                    <form method="post" action="@Url.Action("addHiringProgram", "Hiring")">
+                                    <form method="post" action="@Url.Action("addHiringProgram", "Hiring")" id="addHiringProgram">
                     @* fields like     id INT PRIMARY KEY,
     program_name VARCHAR(100) NOT NULL,
     description VARCHAR(255),
@@ -143,6 +143,30 @@
 
 @section scripts {
                                                             <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+                                                            <script>
+                                                                $("#addHiringProgram").submit(function (e){
+                                                                    var program_name = $("#program_name").val();
+                                                                    var description = $("#description").val();
+                                                                    var start_date = $("#start_date").val();
+                                                                    var end_date = $("#end_date").val();
+                                                                    var course_id = $("#course_id").val();
+                                                                    if (program_name == "" || description == "" || start_date == "" || end_date == "" || course_id == ""){
+                                                                        toastr.error("Please fill all the fields");
+                                                                        e.preventDefault();
+                                                                    }
+                                                                    var program_name_regex = /^[a-zA-Z0-9 ]{3,100}$/;
+                                                                    if (!program_name_regex.test(program_name)){
+                                                                        toastr.error("Program name must be 3 to 100 characters long");
+                                                                        e.preventDefault();
+                                                                    }
+                                                                    var description_regex = /^[a-zA-Z0-9 ]{3,255}$/;
+                                                                    if (!description_regex.test(description)){
+                                                                        toastr.error("Description must be 3 to 255 characters long");
+                                                                        e.preventDefault();
+                                                                    }
+                                                                    $("#addHiringProgram").unbind('submit').submit();
+                                                                })
+                                                            </script>
                                             <!--datatable js-->
                                             <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
                                             <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
