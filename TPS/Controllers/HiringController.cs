@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using TPS.Models;
 using TPS.Validation;
 using System.ComponentModel;
+using System.Net.Mail;
+using System.Net;
 
 
 namespace TPS.Controllers
@@ -632,7 +634,35 @@ namespace TPS.Controllers
             SqlCommand command = new SqlCommand("UPDATE StudentInterview SET status = 1 WHERE id = @id", db.conn);
             command.Parameters.AddWithValue("@id", id);
             command.ExecuteNonQuery();
+            // send email to the student that his interview is approved with remarks
+            SqlCommand command1 = new SqlCommand("SELECT s.email FROM StudentProfile s INNER JOIN StudentInterview si ON s.id = si.student_id WHERE si.id = @id", db.conn);
+            command1.Parameters.AddWithValue("@id", id);
+            string email = (string)command1.ExecuteScalar();
+            SqlCommand command2 = new SqlCommand("SELECT si.remark FROM StudentInterview si WHERE si.id = @id", db.conn);
+            command2.Parameters.AddWithValue("@id", id);
+            string remarks = (string)command2.ExecuteScalar();
+            SendApprovalEmailInterview(email, remarks);
             return RedirectToAction("InterviesAppliedAdmin");
+        }
+
+        private void SendApprovalEmailInterview(string? email, string? remarks)
+        {
+            Console.WriteLine("Sending email to " + email);
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add(email);
+                mail.Subject = "Interview Approval";
+                mail.Body = "Your interview is approved with remarks: " + remarks + " .";
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
         }
 
         [ActionName("RejectInterview")]
@@ -646,7 +676,35 @@ namespace TPS.Controllers
             SqlCommand command = new SqlCommand("UPDATE StudentInterview SET status = 2 WHERE id = @id", db.conn);
             command.Parameters.AddWithValue("@id", id);
             command.ExecuteNonQuery();
+            // send email to the student that his interview is rejected with remarks
+            SqlCommand command1 = new SqlCommand("SELECT s.email FROM StudentProfile s INNER JOIN StudentInterview si ON s.id = si.student_id WHERE si.id = @id", db.conn);
+            command1.Parameters.AddWithValue("@id", id);
+            string email = (string)command1.ExecuteScalar();
+            SqlCommand command2 = new SqlCommand("SELECT si.remark FROM StudentInterview si WHERE si.id = @id", db.conn);
+            command2.Parameters.AddWithValue("@id", id);
+            string remarks = (string)command2.ExecuteScalar();
+            SendRejectEmailInterview(email, remarks);
             return RedirectToAction("InterviesAppliedAdmin");
+        }
+
+        private void SendRejectEmailInterview(string? email, string? remarks)
+        {
+            Console.WriteLine("Sending email to " + email);
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add(email);
+                mail.Subject = "Interview Rejection";
+                mail.Body = "Your interview is rejected with remarks: " + remarks + " .";
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
         }
 
         internal class Interview
