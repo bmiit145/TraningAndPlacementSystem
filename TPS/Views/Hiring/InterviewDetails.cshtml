@@ -126,7 +126,10 @@
                     <span style="font-weight: bold;">
                         Visit:
                     </span>
-                    <a href="@Url.Action("Details","Courses", new { id = ViewBag.InterviewDetails.Course_id })">Course Details</a>
+                    @* <a href="@Url.Action("Details","Courses", new { id = ViewBag.InterviewDetails.Course_id })">Course Details</a> *@
+                        <a href="@Url.Action("ViewPlaylistVideo", "Student", new { course = ViewBag.InterviewDetails.Course_id })">
+                            Course Details
+                        </a>
                 </p>
             </div>
         </div>
