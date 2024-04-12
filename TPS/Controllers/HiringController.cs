@@ -515,6 +515,141 @@ namespace TPS.Controllers
             return View("AppliedInterviewsStudent");
         }
 
+        [ActionName("InterviesAppliedAdmin")]
+        public IActionResult InterviesAppliedAdmin()
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            // get all the applied interviews for the admin with full students details and interview details
+//             SELECT TOP (1000) [id]
+//       ,[enro]
+//       ,[fname]
+//       ,[lname]
+//       ,[email]
+//       ,[contact_no]
+//       ,[CGPA]
+//       ,[resume]
+//       ,[marks9]
+//       ,[marks10]
+//       ,[marks11]
+//       ,[marks12]
+//       ,[is_approved]
+//   FROM [dbo].[StudentProfile]
+            // SqlCommand sqlCommand = new SqlCommand("SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,s.id AS student_id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.resume,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.StudentProfile s ON si.student_id = s.id", db.conn);
+            SqlCommand sqlCommand = new SqlCommand("SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,s.id AS student_id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.resume,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved,hp.program_name FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.StudentProfile s ON si.student_id = s.id", db.conn);
+            SqlDataReader reader = sqlCommand.ExecuteReader();
+            List<TempAppliedWithStatusAdmin> tempInterViewDetails = new List<TempAppliedWithStatusAdmin>();
+            while (reader.Read())
+            {
+                // An exception of type 'System.InvalidCastException' occurred in System.Data.SqlClient.dll but was not handled in user code: 'Unable to cast object of type 'System.Int64' to type 'System.String'.'
+
+                TempAppliedWithStatusAdmin tempAppliedWithStatus = new()
+                {
+                    // Id = reader.GetInt32(0),
+                    // Status = reader.GetInt32(1),
+                    // Remark = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                    // Interview_id = reader.GetInt32(3),
+                    // Company_id = reader.GetInt32(4),
+                    // Company_name = reader.GetString(5),
+                    // Interview_date = DateOnly.FromDateTime(reader.GetDateTime(6)),
+                    // Interview_time = reader.GetTimeSpan(7),
+                    // Venue = reader.GetString(8),
+                    // Company_hiring_id = reader.GetInt32(9),
+                    // Program_name = reader.GetString(10),
+                    // Student_id = reader.GetInt32(11),
+                    // Enro = reader.GetInt64(12).ToString(),
+                    // Fname = reader.GetString(13),
+                    // Lname = reader.GetString(14),
+                    // Email = reader.GetString(15),
+                    // Contact_no = reader.GetString(16),
+                    // CGPA = reader.GetDouble(17),
+                    // Resume = reader.GetString(18),
+                    // Marks9 = reader.GetDouble(19),
+                    // Marks10 = reader.GetDouble(20),
+                    // Marks11 = reader.GetDouble(21),
+                    // Marks12 = reader.GetDouble(22),
+                    // Is_approved = reader.GetInt32(23)
+                    // make all the fields nullable
+                    Id = reader.GetInt32(0),
+                    Status = reader.IsDBNull(1) ? 0 : reader.GetInt32(1),
+                    Remark = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                    Interview_id = reader.IsDBNull(3) ? 0 : reader.GetInt32(3),
+                    Company_id = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                    Company_name = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                    Interview_date = reader.IsDBNull(6) ? new DateOnly() : DateOnly.FromDateTime(reader.GetDateTime(6)),
+                    Interview_time = reader.IsDBNull(7) ? new TimeSpan() : reader.GetTimeSpan(7),
+                    Venue = reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                    Company_hiring_id = reader.IsDBNull(9) ? 0 : reader.GetInt32(9),
+                    Program_name = reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                    Student_id = reader.IsDBNull(11) ? 0 : reader.GetInt32(11),
+                    Enro = reader.IsDBNull(12) ? string.Empty : reader.GetInt64(12).ToString(),
+                    Fname = reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
+                    Lname = reader.IsDBNull(14) ? string.Empty : reader.GetString(14),
+                    Email = reader.IsDBNull(15) ? string.Empty : reader.GetString(15),
+                    Contact_no = reader.IsDBNull(16) ? string.Empty : reader.GetString(16),
+                    CGPA = reader.IsDBNull(17) ? 0 : reader.GetDouble(17),
+                    Resume = reader.IsDBNull(18) ? string.Empty : reader.GetString(18),
+                    Marks9 = reader.IsDBNull(19) ? 0 : reader.GetDouble(19),
+                    Marks10 = reader.IsDBNull(20) ? 0 : reader.GetDouble(20),
+                    Marks11 = reader.IsDBNull(21) ? 0 : reader.GetDouble(21),
+                    Marks12 = reader.IsDBNull(22) ? 0 : reader.GetDouble(22),
+                    Is_approved = reader.IsDBNull(23) ? 0 : reader.GetInt32(23),
+                    Hiring_name = reader.IsDBNull(5) ? string.Empty : reader.GetString(24)
+                };
+                tempInterViewDetails.Add(tempAppliedWithStatus);
+            }
+            ViewBag.AppliedInterviews = tempInterViewDetails;
+            reader.Close();
+            return View("InterviesAppliedAdmin");
+        }
+
+        // AddRemarks
+        [ActionName("AddRemarks")]
+        public IActionResult AddRemarks(int id, string remark)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand command = new SqlCommand("UPDATE StudentInterview SET remark = @remark WHERE id = @id", db.conn);
+            command.Parameters.AddWithValue("@remark", remark);
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
+            return RedirectToAction("InterviesAppliedAdmin");
+        }
+
+        [ActionName("ApproveInterview")]
+        public IActionResult ApproveInterview(int id)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand command = new SqlCommand("UPDATE StudentInterview SET status = 1 WHERE id = @id", db.conn);
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
+            return RedirectToAction("InterviesAppliedAdmin");
+        }
+
+        [ActionName("RejectInterview")]
+        public IActionResult RejectInterview(int id)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            SqlCommand command = new SqlCommand("UPDATE StudentInterview SET status = 2 WHERE id = @id", db.conn);
+            command.Parameters.AddWithValue("@id", id);
+            command.ExecuteNonQuery();
+            return RedirectToAction("InterviesAppliedAdmin");
+        }
+
         internal class Interview
         {
             public int Id { get; set; }
@@ -526,6 +661,35 @@ namespace TPS.Controllers
             public string Venue { get; set; }
             public int Company_hiring_id { get; set; }
         }
+    }
+
+    internal class TempAppliedWithStatusAdmin
+    {
+        public int Id { get; set; }
+        public int Status { get; set; }
+        public string Remark { get; set; }
+        public int Interview_id { get; set; }
+        public int Company_id { get; set; }
+        public string Company_name { get; set; }
+        public DateOnly Interview_date { get; set; }
+        public TimeSpan Interview_time { get; set; }
+        public string Venue { get; set; }
+        public int Company_hiring_id { get; set; }
+        public string Program_name { get; set; }
+        public int Student_id { get; set; }
+        public string Enro { get; set; }
+        public string Fname { get; set; }
+        public string Lname { get; set; }
+        public string Email { get; set; }
+        public string Contact_no { get; set; }
+        public double CGPA { get; set; }
+        public string Resume { get; set; }
+        public double Marks9 { get; set; }
+        public double Marks10 { get; set; }
+        public double Marks11 { get; set; }
+        public double Marks12 { get; set; }
+        public int Is_approved { get; set; }
+        public string Hiring_name { get; set; }
     }
 
     internal class AppliedInterviews
