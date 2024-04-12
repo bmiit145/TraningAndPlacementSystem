@@ -140,18 +140,22 @@
                                                     }
                                                     </td>
                                                 <td>
-                                                    @if (item.Remark == null)
+                                                    @if (item.Remark == null || item.Remark == "")
                                                     {
                                                         <span class="badge bg-warning">No Remarks</span>
                                                     }
                                                     else
                                                     {
                                                         @item.Remark
-                                                    }
+                                                    }   
                                                 </td>
                                                 <td>
-                                                    <a href="@Url.Action("DetailsCompany", "Hiring", new { id = item.Company_id })" class="btn btn-primary">View Company</a>
-                                                    <a href="@Url.Action("InterviewDetails", "Hiring", new { id = item.Id })" class="btn btn-primary">View Interview</a>
+                                                    <a href="@Url.Action("DetailsCompany", "Hiring", new { id = item.Company_id })" class="btn btn-primary btn-sm">
+                                                        View Company
+                                                        </a>
+                                                    <a href="@Url.Action("InterviewDetails", "Hiring", new { id = item.Id })" class="btn btn-primary btn-sm">
+                                                    View Interview
+                                                    </a>
                                                 </td>
                                             </tr>
                                         }

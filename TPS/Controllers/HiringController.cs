@@ -482,8 +482,44 @@ namespace TPS.Controllers
             command.Parameters.AddWithValue("@student_id", student_id);
             command.Parameters.AddWithValue("@interview_id", Convert.ToInt32(id));
             command.ExecuteNonQuery();
+            // send email to the student that he has applied for the interview
+            SqlCommand command1 = new SqlCommand("SELECT s.email FROM StudentProfile s WHERE s.id = @student_id", db.conn);
+            command1.Parameters.AddWithValue("@student_id", student_id);
+            string email = (string)command1.ExecuteScalar();
+            string company_name = string.Empty;
+            string program_name = string.Empty;
+            SqlCommand command2 = new SqlCommand("SELECT c.company_name,hp.program_name FROM dbo.CompanyProfile c INNER JOIN dbo.CompanyHiring ch ON c.company_id = ch.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id WHERE ch.id = (SELECT company_hiring_id FROM Interview WHERE interview_id = @interview_id)", db.conn);
+            command2.Parameters.AddWithValue("@interview_id", id);
+            SqlDataReader reader = command2.ExecuteReader();
+            while (reader.Read())
+            {
+                company_name = reader.GetString(0);
+                program_name = reader.GetString(1);
+            }
+            reader.Close();
+            SendEmailInterview(email, company_name, program_name);
             ViewBag.Success = "You have successfully applied for the interview";
-            return RedirectToAction("Profile", "Authentication");
+            return RedirectToAction("AppliedInterviewsStudent", "Hiring");
+        }
+
+        private void SendEmailInterview(string? email,string company_name,string program_name)
+        {
+            Console.WriteLine("Sending email to " + email);
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add(email);
+                mail.Subject = "Interview Application";
+                mail.Body = "You have successfully applied for the interview.";
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
         }
 
         [ActionName("AppliedInterviewsStudent")]
