@@ -127,7 +127,7 @@
                                                                 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
                                                                 <script>
                                                                     @* add validation in the companyHiringInterview *@
-                                                                    $("#companyHiringInterview").submit(function (e) {
+                                                                    @* $("#companyHiringInterview").submit(function (e) {
                                                                         e.preventDefault();
                                                                         var hiring_id = $("#hiring_id").val();
                                                                         var company_id = $("#company_id").val();
@@ -142,7 +142,31 @@
                                                                                 $("#companyHiringInterview").unbind('submit').submit();
                                                                             }
                                                                         }
+                                                                    }); *@
+                                                                    $(document).ready(function() {
+                                                                        $("#companyHiringInterview").submit(function (e) {
+                                                                            e.preventDefault(); // prevent the form from submitting until validation is complete
+
+                                                                            var hiring_id = $("#hiring_id").val();
+                                                                            var company_id = $("#company_id").val();
+                                                                            var max_apply = $("#max_apply").val();
+                                                                            
+                                                                            // Check if all fields are filled
+                                                                            if (hiring_id == "" || company_id == "" || max_apply == "") {
+                                                                                toastr.error("Please fill all required fields.");
+                                                                            } else {
+                                                                                // Check if max_apply is a valid number
+                                                                                var max_apply_regex = /^[0-9]+$/;
+                                                                                if (!max_apply_regex.test(max_apply)) {
+                                                                                    toastr.error("Maximum Limit must be a number.");
+                                                                                } else {
+                                                                                    // If all validations pass, unbind the submit handler and submit the form
+                                                                                    $(this).unbind('submit').submit();
+                                                                                }
+                                                                            }
+                                                                        });
                                                                     });
+
                                                                 </script>
                                                 <!--datatable js-->
                                                 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>

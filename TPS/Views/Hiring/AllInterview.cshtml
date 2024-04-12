@@ -133,9 +133,8 @@
 @section scripts {
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script>
-            $("#addInterviewForm").submit(function (e){
+            @* $("#addInterviewForm").submit(function (e){
                 e.preventDefault();
-                @* check all fields are filled and match the regex *@
                 if ($("#company_hiring_id").val() == "" || $("#interview_date").val() == "" || $("#interview_time").val() == "" || $("#venue").val() == "") {
                     toastr.error("All fields are required");
                     return;
@@ -147,7 +146,33 @@
                     return;
                 }
                 $("#addInterviewForm").unbind('submit').submit();
-            })
+            }) *@
+                    $(document).ready(function () {
+            $("#addInterviewForm").submit(function (e) {
+                e.preventDefault();
+                
+                var companyId = $("#company_hiring_id").val();
+                var interviewDate = $("#interview_date").val();
+                var interviewTime = $("#interview_time").val();
+                var venue = $("#venue").val();
+
+                // Check if any field is empty
+                if (!companyId || !interviewDate || !interviewTime || !venue) {
+                    toastr.error("All fields are required.");
+                    return;
+                }
+
+                // Validate venue - alphanumeric and spaces allowed
+                var venueRegex = /^[a-zA-Z0-9\s]+$/;
+                if (!venueRegex.test(venue)) {
+                    toastr.error("Venue should be alphanumeric.");
+                    return;
+                }
+
+                // Proceed with the form submission if all validations pass
+                this.submit();
+            });
+
         </script>
         <!--datatable js-->
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
