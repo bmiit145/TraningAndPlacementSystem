@@ -243,7 +243,7 @@ namespace TPS.Controllers
             {
                 mail.From = new MailAddress(email);
                 mail.To.Add(email);
-                mail.Subject = "Approval";
+                mail.Subject = "Rejection";
                 mail.Body = "Your profile has been rejected by admin.";
 
                 using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
