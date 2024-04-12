@@ -442,16 +442,15 @@ namespace TPS.Controllers
                 return RedirectToAction("SignIn", "Authentication");
             }
             db.open();
-// CREATE TABLE [dbo].[StudentInterview] (
-//     [id]           INT           IDENTITY (1, 1) NOT NULL,
-//     [student_id]   INT           NULL,
-//     [interview_id] INT           NULL,
-//     [status]       INT           NULL,
-//     [remark]       VARCHAR (255) NULL,
-//     CONSTRAINT [PK_StudentInterview] PRIMARY KEY CLUSTERED ([id] ASC),
-//     FOREIGN KEY ([interview_id]) REFERENCES [dbo].[Interview] ([interview_id]),
-//     FOREIGN KEY ([student_id]) REFERENCES [dbo].[StudentProfile] ([id])
-// );
+            // check of the student profile is approved or not
+            SqlCommand checkCommandIS = new SqlCommand("SELECT is_approved FROM StudentProfile WHERE id = @id", db.conn);
+            checkCommandIS.Parameters.AddWithValue("@id", HttpContext.Session.GetString("id"));
+            int is_approved = (int)checkCommandIS.ExecuteScalar();
+            if (is_approved == 0)
+            {
+                ViewBag.Error = "Your profile is not approved yet";
+                return RedirectToAction("Profile", "Authentication");
+            }
             // get the student id from the session
             int student_id = Convert.ToInt32(HttpContext.Session.GetString("id"));
             // check if the student has already applied for the interview
