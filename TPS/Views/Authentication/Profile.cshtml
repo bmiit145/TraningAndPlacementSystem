@@ -89,13 +89,6 @@
                                                         Personal Details
                                                     </a>
                                                 </li>
-                                                <li>
-                                                    <a class="nav-link active" data-bs-toggle="tab" href="#appliedInterviews"
-                                                       role="tab">
-                                                        <i class="far fa-user"></i>
-                                                        Applied InterViews
-                                                    </a>
-                                                </li>
                                         }
                                         <li class="nav-item">
                                             <a class="nav-link active" data-bs-toggle="tab" href="#changePassword" role="tab">
@@ -240,65 +233,6 @@
                                                         </div>
                                                         <!--end row-->
                                                     </form>
-                                                </div>
-                                                <div class="tab-pane" id="appliedInterviews" role="tabpanel">
-                                                    <div class="table-responsive">
-                                                        <table class="table table-centered table-nowrap mb-0">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Company Name</th>
-                                                                    <th>Program Name</th>
-                                                                    <th>
-                                                                        Status
-                                                                    </th>
-                                                                    <th>
-                                                                        Remarks
-                                                                    </th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach (var item in ViewBag.AppliedInterviews)
-                                                                {
-                                                                    <tr>
-                                                                        <td>
-                                                                            @item.Company_name
-                                                                        </td>
-                                                                        <td>
-                                                                            @item.Program_name
-                                                                        </td>
-                                                                        <td>
-                                                                            @if (item.Is_approved == "0")
-                                                                            {
-                                                                                <span class="badge bg-success">Applied</span>
-                                                                            }
-                                                                            else if (item.Is_approved == "1")
-                                                                            {
-                                                                                <span class="badge bg-primary">Approved</span>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <span class="badge bg-warning">Rejected</span>
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            @if (item.Remarks == null)
-                                                                            {
-                                                                                <span class="badge bg-warning">No Remarks</span>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                @item.Remarks
-                                                                            }
-                                                                        </td>
-                                                                        <td>
-                                                                            <a href="@Url.Action("DetailsCompany", "Hiring", new { id = item.Company_id })" class="btn btn-primary">View Company</a>
-                                                                            <a href="@Url.Action("InterviewDetails", "Hiring", new { id = item.Id })" class="btn btn-primary">View Interview</a>
-                                                                        </td>
-                                                                    </tr>
-                                                                }
-                                                        </table>
-                                                    </div>
                                                 </div>
                                         }
                                         <!--end tab-pane-->

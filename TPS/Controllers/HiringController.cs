@@ -480,8 +480,38 @@ namespace TPS.Controllers
                 return RedirectToAction("SignIn", "Authentication");
             }
             db.open();
-            // Id, Status, Remark, Interview_id, Company_id, Company_name, Company_hiring_id, Program_name
-            // SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,ch.id,hp.program_name FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id WHERE si.student_id = @student_id
+            int student_id = Convert.ToInt32(HttpContext.Session.GetString("id"));
+            // get all the applied interviews for the student with status,remarks and interview details
+            SqlCommand sqlCommand = new SqlCommand("SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,ch.id,hp.program_name FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id WHERE si.student_id = @student_id", db.conn);
+            sqlCommand.Parameters.AddWithValue("@student_id", student_id);
+            SqlDataReader reader = sqlCommand.ExecuteReader();
+            List<InterViewListStudent> tempInterViewDetails = new List<InterViewListStudent>();
+            while (reader.Read())
+            {
+                InterViewListStudent tempAppliedWithStatus = new()
+                {
+                    // Id = reader.GetInt32(0),
+                    // Status = reader.GetInt32(1),
+                    // Remark = reader.GetString(2),
+                    // Interview_id = reader.GetInt32(3),
+                    // Company_id = reader.GetInt32(4),
+                    // Company_name = reader.GetString(5),
+                    // Company_hiring_id = reader.GetInt32(9),
+                    // Program_name = reader.GetString(10),
+                    Id = reader.GetInt32(0),
+                    Status = reader.GetInt32(1),
+                    // if remark is null then set it to empty string
+                    Remark = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                    Interview_id = reader.GetInt32(3),
+                    Company_id = reader.GetInt32(4),
+                    Company_name = reader.GetString(5),
+                    Company_hiring_id = reader.GetInt32(6),
+                    Program_name = reader.GetString(7)
+                };
+                tempInterViewDetails.Add(tempAppliedWithStatus);
+            }
+            ViewBag.AppliedInterviews = tempInterViewDetails;
+            reader.Close();
             return View("AppliedInterviewsStudent");
         }
 
@@ -496,6 +526,14 @@ namespace TPS.Controllers
             public string Venue { get; set; }
             public int Company_hiring_id { get; set; }
         }
+    }
+
+    internal class AppliedInterviews
+    {
+        public int Id { get; set; }
+        public int Status { get; set; }
+        public string Remark { get; set; }
+        public int Interview_id { get; set; }
     }
 
     internal class TempAppliedWithStatus
