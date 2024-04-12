@@ -465,6 +465,19 @@ namespace TPS.Controllers
                 ViewBag.Error = "You have already applied for this interview";
                 return RedirectToAction("Profile", "Authentication");
             }
+            // check that if the max apply limit is reached or not
+            SqlCommand checkCommand1 = new SqlCommand("SELECT max_apply FROM CompanyHiring WHERE id = (SELECT company_hiring_id FROM Interview WHERE interview_id = @interview_id)", db.conn);
+            checkCommand1.Parameters.AddWithValue("@interview_id", id);
+            int max_apply = (int)checkCommand1.ExecuteScalar();
+            SqlCommand checkCommand2 = new SqlCommand("SELECT COUNT(*) FROM StudentInterview WHERE interview_id = @interview_id", db.conn);
+            checkCommand2.Parameters.AddWithValue("@interview_id", id);
+            int count1 = (int)checkCommand2.ExecuteScalar();
+            if (count1 >= max_apply)
+            {
+                ViewBag.Error = "The max apply limit is reached for this interview";
+                return RedirectToAction("Profile", "Authentication");
+            }
+            // apply for the interview
             SqlCommand command = new SqlCommand("INSERT INTO StudentInterview (student_id,interview_id,status) VALUES (@student_id,@interview_id,0)", db.conn);
             command.Parameters.AddWithValue("@student_id", student_id);
             command.Parameters.AddWithValue("@interview_id", Convert.ToInt32(id));
@@ -491,14 +504,6 @@ namespace TPS.Controllers
             {
                 InterViewListStudent tempAppliedWithStatus = new()
                 {
-                    // Id = reader.GetInt32(0),
-                    // Status = reader.GetInt32(1),
-                    // Remark = reader.GetString(2),
-                    // Interview_id = reader.GetInt32(3),
-                    // Company_id = reader.GetInt32(4),
-                    // Company_name = reader.GetString(5),
-                    // Company_hiring_id = reader.GetInt32(9),
-                    // Program_name = reader.GetString(10),
                     Id = reader.GetInt32(0),
                     Status = reader.GetInt32(1),
                     // if remark is null then set it to empty string
