@@ -75,15 +75,14 @@
                             <div class="card-footer">
                                 <div class="d-flex justify-content-between">
                                 <strong class="text-muted">@item.createdDate</strong>
-                                <div>
-                                    <a href="@Url.Action("ViewPlaylistVideo", "Student", new { id = item.ID })" class="btn btn-sm btn-primary">View Playlist</a>
-                
-                                    <form method="post" action="@Url.Action("downloadListCsv", "Video")">
+                                
+                                    <a href='@Url.Action("ViewPlaylistVideo", "Student", new { id = item.ID })' class="btn btn-sm btn-primary">View Playlist</a>
+                                    <form method="post" action='@Url.Action("downloadListCsv", "Video")'>
                                         <input type="hidden" name="playlist" value="@item.ID" />
                                         <button type="submit" class="btn btn-sm btn-primary">download</button>
                                     </form>
                                     </div>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

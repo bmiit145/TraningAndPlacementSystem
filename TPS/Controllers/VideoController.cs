@@ -39,7 +39,7 @@ namespace TPS.Controllers
                 reader.Close();
                 db.close();
             }
-
+            
             // pass cousrses and playlists to view
             ViewBag.Courses = Course.GetCourses();
             ViewBag.Playlists = Playlist.GetPlaylists();

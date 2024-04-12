@@ -44,7 +44,7 @@ namespace TPS.Controllers
         }
 
         [ActionName("ViewPlaylistVideo")]
-        public IActionResult ViewPlaylistVideo(int? id)
+        public IActionResult ViewPlaylistVideo(int? id, int? course)
         {
             // if session is not available then redirect to signin page
             if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "0")
@@ -54,13 +54,19 @@ namespace TPS.Controllers
 
 
             ViewBag.Playlists = Playlist.GetPlaylists();
-            // get playlist details
-            if (id > 0)
+            ViewBag.Courses = Course.GetCourses();
+            // get all course videos
+            if (course > 0)
+            {
+                ViewBag.Pvideos = PlaylistVideo.GetVideos().FindAll(video => video.courseID == course);
+            }
+            else if (id > 0)
             {
                 ViewBag.Playlist = Playlist.GetPlaylist(id ?? 0);
                 ViewBag.Pvideos = PlaylistVideo.GetVideos(id);
             }
-            else{
+            else
+            {
                 ViewBag.Pvideos = PlaylistVideo.GetVideos();
             }
 
