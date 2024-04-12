@@ -282,9 +282,9 @@
 
 
         </script>
-
+        <script src="~/assets/js/validation.js"></script>
         <script>
-            $(document).ready(function () {
+            $(document).ready(function() {
                 // Add custom validation methods
                 $.validator.addMethod("noSpecialChars", function (value, element) {
                     return this.optional(element) || /^[a-zA-Z0-9\s\-/.|]+$/.test(value);

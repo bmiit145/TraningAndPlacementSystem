@@ -1,0 +1,117 @@
+@{
+    ViewBag.Title = "Courses";
+    ViewBag.pTitle = "Dashboard";
+    ViewBag.pageTitle = "Courses";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles {
+                                        <!--datatable css-->
+                                        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+                                        <!--datatable responsive css-->
+                                        <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
+
+                                        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+}
+@* check that there is a message *@
+@if (ViewBag.Message != null)
+{
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <strong>Success!</strong> @ViewBag.Message
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+}
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                       Courses
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form method="post" action="@Url.Action("addOrEditCourse", "Course")">
+                                        <div class="mb-3">
+                                            <label for="course_name" class="form-label">Course Name</label>
+                                            <input type="text" class="form-control" id="course_name" name="course_name" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <textarea class="form-control" id="description" name="description" required></textarea>
+                                        </div>
+                                        <input type="hidden" name="id" id="id" value="@ViewBag.ID" />
+                                        <input type="hidden" name="edit" id="edit" value="@ViewBag.Edit" />
+                                        <button type="submit" id="action-text" class="btn btn-primary">Add Course</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">
+                                        Course List
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <table id="scroll-horizontal" class="table nowrap align-middle" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Description</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        @foreach (var item in ViewBag.Courses)
+                        {
+                                                                    <tr>
+                                                                        <td>@item.ID</td>
+                                                                        <td>@item.Name</td>
+                                                                        <td>@item.Description</td>
+                                                                        <td>
+                                    @* fill the fields in the form *@
+                                                                            <button
+                                                                                onclick="
+                                                                        $('#course_name').val('@item.Name');
+                                                                        $('#description').val('@item.Description');
+                                                                        $('#action-text').text('Update Course');
+                                                                        $('#id').val('@item.ID');
+                                                                        $('#edit').val('true');
+                                                                                "
+                                                                             type="button" class="btn btn-primary btn-sm">Edit</button>
+                                                                            <form 
+                                                                                method="post" 
+                                                                                action="@Url.Action("deleteHiringProgram", "Hiring")">
+                                                                                <input type="hidden" name="id" value="@item.ID" />
+                                                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                                            </form>
+                                                                        </td>
+                                                                    </tr>
+                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+@section scripts {
+                                                            <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+                                            <!--datatable js-->
+                                            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+                                            <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+                                            <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+                                            <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+                                            <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+                                            <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+                                            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+                                            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+                                            <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+                                            <script src="~/assets/js/pages/datatables.init.js"></script>
+
+                                            <!-- App js -->
+                                            <script src="~/assets/js/app.js"></script>
+}
