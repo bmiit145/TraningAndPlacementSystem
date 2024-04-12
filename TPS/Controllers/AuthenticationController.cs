@@ -199,7 +199,61 @@ namespace TPS.Controllers
             SqlCommand cmd = new SqlCommand("update StudentProfile set is_approved = 1 where id = @id", db.conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
+            // send email to student
+            SqlCommand cmd1 = new SqlCommand("select email from StudentProfile where id = @id", db.conn);
+            cmd1.Parameters.AddWithValue("@id", id);
+            SqlDataReader dr = cmd1.ExecuteReader();
+            string email = "";
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    email = dr["email"].ToString();
+                }
+            }
+            dr.Close();
+            SendApprovalEmail(email);
             return RedirectToAction("StudentList");
+        }
+
+        private void SendApprovalEmail(string? email)
+        {
+            Console.WriteLine("Sending email to " + email);
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add(email);
+                mail.Subject = "Approval";
+                mail.Body = "Your profile has been approved by admin.";
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
+        }
+
+        private void SendRejectionEmail(string? email)
+        {
+            Console.WriteLine("Sending email to " + email);
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add(email);
+                mail.Subject = "Approval";
+                mail.Body = "Your profile has been rejected by admin.";
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com"))
+                {
+                    smtp.Port = 587;
+                    smtp.Credentials = new System.Net.NetworkCredential("21bmiit145@gmail.com", "nokwrtgzldqipgbv");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
+            }
         }
 
         [ActionName("RejectStudent")]
@@ -220,6 +274,20 @@ namespace TPS.Controllers
             SqlCommand cmd = new SqlCommand("update StudentProfile set is_approved = 2 where id = @id", db.conn);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
+            // send email to student
+            SqlCommand cmd1 = new SqlCommand("select email from StudentProfile where id = @id", db.conn);
+            cmd1.Parameters.AddWithValue("@id", id);
+            SqlDataReader dr = cmd1.ExecuteReader();
+            string email = "";
+            if (dr.HasRows)
+            {
+                while (dr.Read())
+                {
+                    email = dr["email"].ToString();
+                }
+            }
+            dr.Close();
+            SendRejectionEmail(email);
             return RedirectToAction("StudentList");
         }
 
