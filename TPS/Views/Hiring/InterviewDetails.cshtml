@@ -162,7 +162,7 @@
                 <form method="post" action="@Url.Action("ApplyInterviewStudent", "Hiring")">
                     <input type="hidden" name="id" id="id" value="@ViewBag.InterviewDetails.Interview_id" />
                     <button type="submit" class="btn btn-primary"
-                        disabled="@ViewBag.InterviewDetails.Interview_status == 1 ? true : false"
+                        disabled="@ViewBag.InterviewDetails.Interview_status == 1 ? 'disabled' : ''"
                     >Apply</button>
                 </form>
             </div>
