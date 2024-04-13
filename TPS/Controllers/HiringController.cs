@@ -508,7 +508,7 @@ namespace TPS.Controllers
             return RedirectToAction("AppliedInterviewsStudent", "Hiring");
         }
 
-        private void SendEmailInterview(string? email,string company_name,string program_name)
+        private void SendEmailInterview(string? email, string company_name, string program_name)
         {
             Console.WriteLine("Sending email to " + email);
             using (MailMessage mail = new MailMessage())
@@ -572,20 +572,20 @@ namespace TPS.Controllers
             }
             db.open();
             // get all the applied interviews for the admin with full students details and interview details
-//             SELECT TOP (1000) [id]
-//       ,[enro]
-//       ,[fname]
-//       ,[lname]
-//       ,[email]
-//       ,[contact_no]
-//       ,[CGPA]
-//       ,[resume]
-//       ,[marks9]
-//       ,[marks10]
-//       ,[marks11]
-//       ,[marks12]
-//       ,[is_approved]
-//   FROM [dbo].[StudentProfile]
+            //             SELECT TOP (1000) [id]
+            //       ,[enro]
+            //       ,[fname]
+            //       ,[lname]
+            //       ,[email]
+            //       ,[contact_no]
+            //       ,[CGPA]
+            //       ,[resume]
+            //       ,[marks9]
+            //       ,[marks10]
+            //       ,[marks11]
+            //       ,[marks12]
+            //       ,[is_approved]
+            //   FROM [dbo].[StudentProfile]
             // SqlCommand sqlCommand = new SqlCommand("SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,s.id AS student_id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.resume,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.StudentProfile s ON si.student_id = s.id", db.conn);
             SqlCommand sqlCommand = new SqlCommand("SELECT si.id,si.status,si.remark,si.interview_id,c.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,s.id AS student_id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.resume,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved,hp.program_name FROM dbo.StudentInterview si INNER JOIN dbo.Interview i ON si.interview_id = i.interview_id INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id INNER JOIN dbo.StudentProfile s ON si.student_id = s.id", db.conn);
             SqlDataReader reader = sqlCommand.ExecuteReader();
@@ -790,6 +790,230 @@ namespace TPS.Controllers
             return View("InterviewsStudent");
         }
 
+        // [ActionName("GenerateReport")]
+        // public IActionResult GenerateReport()
+        // {
+        //     if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+        //     {
+        //         return RedirectToAction("SignIn", "Authentication");
+        //     }
+        //     db.open();
+        //     // get all the details for student with number of interviews applied, approved, rejected
+        //     SqlCommand sqlCommand = new SqlCommand("SELECT s.id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved,COUNT(si.id) AS total_interviews,COUNT(CASE WHEN si.status = 1 THEN 1 END) AS approved_interviews,COUNT(CASE WHEN si.status = 2 THEN 1 END) AS rejected_interviews FROM dbo.StudentProfile s LEFT JOIN dbo.StudentInterview si ON s.id = si.student_id GROUP BY s.id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved", db.conn);
+        //     SqlDataReader reader = sqlCommand.ExecuteReader();
+        //     List<StudentReport> studentReports = new List<StudentReport>();
+        //     while (reader.Read())
+        //     {
+        //         StudentReport studentReport = new()
+        //         {
+        //             Id = reader.GetInt32(0),
+        //             Enro = reader.GetInt64(1).ToString(),
+        //             Fname = reader.GetString(2),
+        //             Lname = reader.GetString(3),
+        //             Email = reader.GetString(4),
+        //             Contact_no = reader.GetString(5),
+        //             CGPA = reader.GetDouble(6),
+        //             Marks9 = reader.GetDouble(7),
+        //             Marks10 = reader.GetDouble(8),
+        //             Marks11 = reader.GetDouble(9),
+        //             Marks12 = reader.GetDouble(10),
+        //             Is_approved = reader.GetInt32(11),
+        //             Total_interviews = reader.GetInt32(12),
+        //             Approved_interviews = reader.GetInt32(13),
+        //             Rejected_interviews = reader.GetInt32(14)
+        //         };
+        //         studentReports.Add(studentReport);
+        //     }
+        //     ViewBag.StudentReports = studentReports;
+        //     reader.Close();
+        //     return View("GenerateReport");
+        // }
+        // [ActionName("downloadListCsv")]
+        // public IActionResult downloadListCsv(int? playlist)
+        // {
+        //     // if session is not available then redirect to signin page
+        //     if (HttpContext.Session.GetString("role") == null)
+        //     {
+        //         ViewBag.Error = "You are not authorized to access this page";
+        //         return RedirectToAction("SignIn", "Authentication");
+        //     }
+
+        //     // get all the videos
+        //     List<PlaylistVideo> videos = PlaylistVideo.GetVideos();
+        //     if (playlist != null && playlist != -1)
+        //     {
+        //         videos = videos.Where(v => v.playlistID == playlist).ToList();
+        //     }
+
+        //     // create a csv file and download it
+        //     string csv = "VideoId,Link,Title,PlaylistName,CourseName\n";
+        //     foreach (var video in videos)
+        //     {
+        //         csv += video.ID + ",https://www.youtube.com/watch?v=" + video.link + "," + video.title + "," + video.playlistName + "," + video.courseName + "\n";
+        //     }
+        //     return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "videos.csv");
+        // }
+
+        [ActionName("GenerateReport")]
+        public IActionResult GenerateReport()
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            return View();
+        }
+
+        [ActionName("StudentGenerateReport")]
+        public IActionResult StudentGenerateReport(int option)
+        {
+            if (HttpContext.Session.GetString("role") == null || HttpContext.Session.GetString("role") != "1")
+            {
+                return RedirectToAction("SignIn", "Authentication");
+            }
+            db.open();
+            if (option == 0)
+            {
+                // get all the details for student with number of interviews applied, approved, rejected
+                SqlCommand sqlCommand = new SqlCommand("SELECT s.id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved,COUNT(si.id) AS total_interviews,COUNT(CASE WHEN si.status = 1 THEN 1 END) AS approved_interviews,COUNT(CASE WHEN si.status = 2 THEN 1 END) AS rejected_interviews FROM dbo.StudentProfile s LEFT JOIN dbo.StudentInterview si ON s.id = si.student_id GROUP BY s.id,s.enro,s.fname,s.lname,s.email,s.contact_no,s.CGPA,s.marks9,s.marks10,s.marks11,s.marks12,s.is_approved", db.conn);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                List<StudentReport> studentReports = new List<StudentReport>();
+                while (reader.Read())
+                {
+                    StudentReport studentReport = new()
+                    {
+                        Id = reader.GetInt32(0),
+                        Enro = reader.GetInt64(1).ToString(),
+                        Fname = reader.GetString(2),
+                        Lname = reader.GetString(3),
+                        Email = reader.GetString(4),
+                        Contact_no = reader.GetString(5),
+                        CGPA = reader.GetDouble(6),
+                        Marks9 = reader.GetDouble(7),
+                        Marks10 = reader.GetDouble(8),
+                        Marks11 = reader.GetDouble(9),
+                        Marks12 = reader.GetDouble(10),
+                        Is_approved = reader.GetInt32(11),
+                        Total_interviews = reader.GetInt32(12),
+                        Approved_interviews = reader.GetInt32(13),
+                        Rejected_interviews = reader.GetInt32(14)
+                    };
+                    studentReports.Add(studentReport);
+                }
+                // create a csv file and download it
+                string csv = "Id,Enro,Fname,Lname,Email,Contact_no,CGPA,Marks9,Marks10,Marks11,Marks12,Is_approved,Total_interviews,Approved_interviews,Rejected_interviews\n";
+                foreach (var student in studentReports)
+                {
+                    bool is_approved = student.Is_approved == 1 ? true : false;
+                    csv += student.Id + "," + student.Enro + "," + student.Fname + "," + student.Lname + "," + student.Email + "," + student.Contact_no + "," + student.CGPA + "," + student.Marks9 + "," + student.Marks10 + "," + student.Marks11 + "," + student.Marks12 + "," + is_approved + "," + student.Total_interviews + "," + student.Approved_interviews + "," + student.Rejected_interviews + "\n";
+                }
+                return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "students.csv");
+            }else if (option == 1)
+            {
+                // generate report for the companies
+                SqlCommand sqlCommand = new SqlCommand("SELECT c.company_id,c.company_name,COUNT(i.interview_id) AS total_interviews,COUNT(CASE WHEN i.interview_status = 1 THEN 1 END) AS approved_interviews,COUNT(CASE WHEN i.interview_status = 2 THEN 1 END) AS rejected_interviews FROM dbo.CompanyProfile c LEFT JOIN dbo.CompanyHiring ch ON c.company_id = ch.company_id LEFT JOIN dbo.Interview i ON ch.id = i.company_hiring_id GROUP BY c.company_id,c.company_name", db.conn);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                List<CompanyReport> companyReports = new List<CompanyReport>();
+                while (reader.Read())
+                {
+                    CompanyReport companyReport = new()
+                    {
+                        Company_id = reader.GetInt32(0),
+                        Company_name = reader.GetString(1),
+                        Total_interviews = reader.GetInt32(2),
+                        Approved_interviews = reader.GetInt32(3),
+                        Rejected_interviews = reader.GetInt32(4)
+                    };
+                    companyReports.Add(companyReport);
+                }
+                // create a csv file and download it
+                string csv = "Company_id,Company_name,Total_interviews,Approved_interviews,Rejected_interviews\n";
+                foreach (var company in companyReports)
+                {
+                    csv += company.Company_id + "," + company.Company_name + "," + company.Total_interviews + "," + company.Approved_interviews + "," + company.Rejected_interviews + "\n";
+                }
+                return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "companies.csv");
+            }else if(option==2){
+                // generate a report for the hiring programs
+                SqlCommand sqlCommand = new SqlCommand("SELECT hp.id,hp.program_name,COUNT(i.interview_id) AS total_interviews,COUNT(CASE WHEN i.interview_status = 1 THEN 1 END) AS approved_interviews,COUNT(CASE WHEN i.interview_status = 2 THEN 1 END) AS rejected_interviews FROM dbo.HiringProgram hp LEFT JOIN dbo.CompanyHiring ch ON hp.id = ch.hiring_id LEFT JOIN dbo.Interview i ON ch.id = i.company_hiring_id GROUP BY hp.id,hp.program_name", db.conn);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                List<HiringProgramReport> hiringProgramReports = new List<HiringProgramReport>();
+                while (reader.Read())
+                {
+                    HiringProgramReport hiringProgramReport = new()
+                    {
+                        Hiring_id = reader.GetInt32(0),
+                        Program_name = reader.GetString(1),
+                        Total_interviews = reader.GetInt32(2),
+                        Approved_interviews = reader.GetInt32(3),
+                        Rejected_interviews = reader.GetInt32(4)
+                    };
+                    hiringProgramReports.Add(hiringProgramReport);
+                }
+                // create a csv file and download it
+                string csv = "Hiring_id,Program_name,Total_interviews,Approved_interviews,Rejected_interviews\n";
+                foreach (var hiringProgram in hiringProgramReports)
+                {
+                    csv += hiringProgram.Hiring_id + "," + hiringProgram.Program_name + "," + hiringProgram.Total_interviews + "," + hiringProgram.Approved_interviews + "," + hiringProgram.Rejected_interviews + "\n";
+                }
+                return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "hiring_programs.csv");
+            }else if(option==3){
+                // generate a report for the interviews
+                SqlCommand sqlCommand = new SqlCommand("SELECT i.interview_id,ch.company_id,c.company_name,i.interview_date,i.interview_time,i.venue,ch.id,hp.program_name,i.interview_status FROM dbo.Interview i INNER JOIN dbo.CompanyHiring ch ON i.company_hiring_id = ch.id INNER JOIN dbo.CompanyProfile c ON ch.company_id = c.company_id INNER JOIN dbo.HiringProgram hp ON ch.hiring_id = hp.id", db.conn);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                List<TempInterViewDetails> tempInterViewDetails = new List<TempInterViewDetails>();
+                while (reader.Read())
+                {
+                    TempInterViewDetails tempInterViewDetail = new()
+                    {
+                        Interview_id = reader.GetInt32(0),
+                        Company_id = reader.GetInt32(1),
+                        Company_name = reader.GetString(2),
+                        Interview_date = DateOnly.FromDateTime(reader.GetDateTime(3)),
+                        Interview_time = reader.GetTimeSpan(4),
+                        Venue = reader.GetString(5),
+                        Company_hiring_id = reader.GetInt32(6),
+                        Program_name = reader.GetString(7),
+                        Interview_status = reader.GetInt32(8)
+                    };
+                    tempInterViewDetails.Add(tempInterViewDetail);
+                }
+                // create a csv file and download it
+                string csv = "Interview_id,Company_id,Company_name,Interview_date,Interview_time,Venue,Company_hiring_id,Program_name,Interview_status\n";
+                foreach (var interview in tempInterViewDetails)
+                {
+                    csv += interview.Interview_id + "," + interview.Company_id + "," + interview.Company_name + "," + interview.Interview_date + "," + interview.Interview_time + "," + interview.Venue + "," + interview.Company_hiring_id + "," + interview.Program_name + "," + interview.Interview_status + "\n";
+                }
+                return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "interviews.csv");
+            }else if(option==4){
+                // generate a report for the courses
+                SqlCommand sqlCommand = new SqlCommand("SELECT c.course_id,c.course_name,COUNT(i.interview_id) AS total_interviews,COUNT(CASE WHEN i.interview_status = 1 THEN 1 END) AS approved_interviews,COUNT(CASE WHEN i.interview_status = 2 THEN 1 END) AS rejected_interviews FROM dbo.Course c LEFT JOIN dbo.HiringProgram hp ON c.course_id = hp.course_id LEFT JOIN dbo.CompanyHiring ch ON hp.id = ch.hiring_id LEFT JOIN dbo.Interview i ON ch.id = i.company_hiring_id GROUP BY c.course_id,c.course_name", db.conn);
+                SqlDataReader reader = sqlCommand.ExecuteReader();
+                List<CourseReport> courseReports = new List<CourseReport>();
+                while (reader.Read())
+                {
+                    CourseReport courseReport = new()
+                    {
+                        Course_id = reader.GetInt32(0),
+                        Course_name = reader.GetString(1),
+                        Total_interviews = reader.GetInt32(2),
+                        Approved_interviews = reader.GetInt32(3),
+                        Rejected_interviews = reader.GetInt32(4)
+                    };
+                    courseReports.Add(courseReport);
+                }
+                // create a csv file and download it
+                string csv = "Course_id,Course_name,Total_interviews,Approved_interviews,Rejected_interviews\n";
+                foreach (var course in courseReports)
+                {
+                    csv += course.Course_id + "," + course.Course_name + "," + course.Total_interviews + "," + course.Approved_interviews + "," + course.Rejected_interviews + "\n";
+                }
+                return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "courses.csv");
+            }else{
+                ViewBag.Error = "Invalid option selected";
+                return RedirectToAction("GenerateReport");
+            }
+        }
         internal class Interview
         {
             public int Id { get; set; }
@@ -802,6 +1026,52 @@ namespace TPS.Controllers
             public int Company_hiring_id { get; set; }
             public int Interview_status { get; set; }
         }
+    }
+
+    internal class CourseReport
+    {
+        public int Course_id { get; set; }
+        public string Course_name { get; set; }
+        public int Total_interviews { get; set; }
+        public int Approved_interviews { get; set; }
+        public int Rejected_interviews { get; set; }
+    }
+
+    internal class HiringProgramReport
+    {
+        public int Hiring_id { get; set; }
+        public string Program_name { get; set; }
+        public int Total_interviews { get; set; }
+        public int Approved_interviews { get; set; }
+        public int Rejected_interviews { get; set; }
+    }
+
+    internal class CompanyReport
+    {
+        public int Company_id { get; set; }
+        public string Company_name { get; set; }
+        public int Total_interviews { get; set; }
+        public int Approved_interviews { get; set; }
+        public int Rejected_interviews { get; set; }
+    }
+
+    internal class StudentReport
+    {
+        public int Id { get; set; }
+        public string Enro { get; set; }
+        public string Fname { get; set; }
+        public string Lname { get; set; }
+        public string Email { get; set; }
+        public string Contact_no { get; set; }
+        public double CGPA { get; set; }
+        public double Marks9 { get; set; }
+        public double Marks10 { get; set; }
+        public double Marks11 { get; set; }
+        public double Marks12 { get; set; }
+        public int Is_approved { get; set; }
+        public int Total_interviews { get; set; }
+        public int Approved_interviews { get; set; }
+        public int Rejected_interviews { get; set; }
     }
 
     internal class TempAppliedWithStatusAdmin
