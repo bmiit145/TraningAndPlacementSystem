@@ -985,30 +985,6 @@ namespace TPS.Controllers
                     csv += interview.Interview_id + "," + interview.Company_id + "," + interview.Company_name + "," + interview.Interview_date + "," + interview.Interview_time + "," + interview.Venue + "," + interview.Company_hiring_id + "," + interview.Program_name + "," + interview.Interview_status + "\n";
                 }
                 return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "interviews.csv");
-            }else if(option==4){
-                // generate a report for the courses
-                SqlCommand sqlCommand = new SqlCommand("SELECT c.course_id,c.course_name,COUNT(i.interview_id) AS total_interviews,COUNT(CASE WHEN i.interview_status = 1 THEN 1 END) AS approved_interviews,COUNT(CASE WHEN i.interview_status = 2 THEN 1 END) AS rejected_interviews FROM dbo.Course c LEFT JOIN dbo.HiringProgram hp ON c.course_id = hp.course_id LEFT JOIN dbo.CompanyHiring ch ON hp.id = ch.hiring_id LEFT JOIN dbo.Interview i ON ch.id = i.company_hiring_id GROUP BY c.course_id,c.course_name", db.conn);
-                SqlDataReader reader = sqlCommand.ExecuteReader();
-                List<CourseReport> courseReports = new List<CourseReport>();
-                while (reader.Read())
-                {
-                    CourseReport courseReport = new()
-                    {
-                        Course_id = reader.GetInt32(0),
-                        Course_name = reader.GetString(1),
-                        Total_interviews = reader.GetInt32(2),
-                        Approved_interviews = reader.GetInt32(3),
-                        Rejected_interviews = reader.GetInt32(4)
-                    };
-                    courseReports.Add(courseReport);
-                }
-                // create a csv file and download it
-                string csv = "Course_id,Course_name,Total_interviews,Approved_interviews,Rejected_interviews\n";
-                foreach (var course in courseReports)
-                {
-                    csv += course.Course_id + "," + course.Course_name + "," + course.Total_interviews + "," + course.Approved_interviews + "," + course.Rejected_interviews + "\n";
-                }
-                return File(new System.Text.UTF8Encoding().GetBytes(csv), "text/csv", "courses.csv");
             }else{
                 ViewBag.Error = "Invalid option selected";
                 return RedirectToAction("GenerateReport");
