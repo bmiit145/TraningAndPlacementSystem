@@ -1,5 +1,5 @@
 @{
-                // using Microsoft.EntityFrameworkCore.Metadata.Internal; // Removed as it's not a type
+    // using Microsoft.EntityFrameworkCore.Metadata.Internal; // Removed as it's not a type
     ViewBag.Title = "Playlist | Training And Placement Cell";
     ViewBag.pTitle = "Dashboard";
     ViewBag.pageTitle = "Playlist";
@@ -34,6 +34,15 @@
                 @if (ViewBag.Playlist == null)
                 {
                     <form action="@Url.Action("addorEditPlaylist", "Video")" method="post" class="form" id="playlist-form">
+                        <div class="mb-2">
+                            <input type="checkbox" name="youtubelinkcheckbox" id="youtubelinkcheckbox">
+                            <label for="youtubelinkcheckbox" class="form-label">Youtube link</label>
+                        </div>
+                        <div class="mb-3 d-none">
+                            <label for="playlistYoutubeLink" class="form-label">Youtube Playlist Link</label>
+                            <input type="text" name="playlistYoutubeLink" class="form-control " id="playlistYoutubeLink"
+                                placeholder="Enter Youtube Playlist Link">
+                        </div>
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" name="name" class="form-control" id="name" placeholder="Enter Playlist Name">
@@ -137,16 +146,30 @@
                                 <div class="mb-3 d-flex align-items-center">
                                     <input type="text" name="videoUrls[]" class="form-control video-url link"
                                         placeholder="Enter Video URL">
+                                    @* <input type="text" class="form-control mb-2" name="videoTitles[]"> *@
                                     <button type="button" class="btn btn-success add-video ms-2">+</button>
                                 </div>
                             }
                         </div>
                         <button type="submit" class="btn btn-primary" id="submitBtn">Update</button>
+                        <button type="button" class="btn btn-danger" id="backBtn">Back</button>
                     </form>
                 }
             </div>
         </div>
 
+    </div>
+    <div class="col-md-12 col-lg-6 d-none youtubePreviewContainer">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Youtube Playlist Thumbnail</h4>
+            </div>
+            <div class="card-body">
+                <div id="youtubePreview" class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -223,7 +246,6 @@
         <script src="~/assets/js/youtubeVideo.js"></script>
 
         <script>
-
             $(document).ready(function () {
                 // Add video input box on click of '+' button
                 $(document).on('click', '.add-video', function () {
@@ -264,6 +286,12 @@
                                     $("#submitBtn").prop("disabled", false);
                                 } else {
                                     removeVideoTitle(input);
+                                    // also remove the link itself if not first
+                                    if (input.closest('.mb-3').index() !== 1) {
+                                        input.parent().remove();
+                                    } else {
+                                        input.val("");
+                                    }
                                     $("#youtubePreview").html("");
                                     $("#submitBtn").prop("disabled", true);
                                     toastr.error("Error fetching video information. Please try again later.");
@@ -281,10 +309,11 @@
             });
 
 
+
         </script>
         <script src="~/assets/js/validation.js"></script>
         <script>
-            $(document).ready(function() {
+            $(document).ready(function () {
                 // Add custom validation methods
                 $.validator.addMethod("noSpecialChars", function (value, element) {
                     return this.optional(element) || /^[a-zA-Z0-9\s\-/.|]+$/.test(value);
@@ -346,5 +375,99 @@
                     }
                 });
             });
+        </script>
+
+        @* for youtube link *@
+        <script>
+            function isValidYouTubePlaylistUrl(url) {
+                var youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]list=))([^\/\n\s&]+)/;
+                return youtubeRegex.test(url);
+            }
+
+            $(document).ready(function () {
+
+                function resetForm() {
+                    $('#name').val('');
+                    $('#description').val('');
+                    $('#playlistYoutubeLink').val('');
+                    $('#videoUrlsContainer').html('<h4 class="card-title">Add Videos</h4><div class="mb-3 d-flex align-items-center"><input type="text" name="videoUrls[]" class="form-control video-url link" placeholder="Enter Video URL"><button type="button" class="btn btn-success add-video ms-2">+</button></div>');
+                    $('#youtubePreview').html('');
+                }
+
+                // youtubelinkcheckbox checked append youtube playlist link
+                $('#youtubelinkcheckbox').change(function () {
+                    if (this.checked) {
+                        $('#playlistYoutubeLink').parent().removeClass('d-none');
+                        $('.youtubePreviewContainer').removeClass('d-none');
+                    } else {
+                        $('#playlistYoutubeLink').parent().addClass('d-none');
+                        $('.youtubePreviewContainer').addClass('d-none');
+
+                        // resetForm
+                        resetForm();
+                    }
+                });
+
+                // if youtubeVideoLink is changed then fill up from by fetching data from youtube
+                $('#playlistYoutubeLink').change(function () {
+                    var link = $(this).val();
+                    resetForm();
+                    $(this).val(link);
+                    if (link !== "" && isValidYouTubePlaylistUrl(link)) {
+                        getYouTubePlaylistInfo(link, function (error, data) {
+                            if (!error) {
+                                console.log(data);
+                                $('#name').val(data.snippet.title);
+                                $('#description').val(data.snippet.description);
+                                $('#youtubePreview').html('<iframe class="embed-responsive-item" src="https://www.youtube.com/embed/videoseries?list=' + data.id + '" allowfullscreen></iframe>');
+
+                                // set all the videos in the form
+
+                                var playlistId = data.id;
+                                getYouTubePlaylistVideos(playlistId, function (error, videos) {
+                                    if (!error) {
+                                        var videoUrls = $('.video-url');
+                                        var videoTitles = $('input[name="videoTitles[]"]');
+                                        var numVideos = videos.length;
+
+                                        // Ensure there are enough form fields for all videos
+                                        while (videoUrls.length < numVideos) {
+                                            $('.add-video').trigger('click');
+                                            videoUrls = $('.video-url');
+                                            videoTitles = $('input[name="videoTitles[]"]');
+                                        }
+
+                                        // Fill form fields with video URLs and titles
+                                        for (var i = 0; i < numVideos; i++) {
+                                            $(videoUrls[i]).val('https://www.youtube.com/watch?v=' + videos[i].id);
+                                            //    $(videoTitles[i]).val(videos[i].title);
+
+                                            // trigger input event to fetch video title
+                                            $(videoUrls[i]).trigger('input');
+                                        }
+                                    } else {
+                                        console.log(error);
+                                        toastr.error("Error fetching playlist videos. Please try again later.");
+                                    }
+                                });
+
+
+                            } else {
+                                console.log(error);
+                                // toastr.error("Error fetching playlist information. Please try again later.");
+                                toastr.error(error + "Please try again later.");
+                            }
+                        });
+                    } else {
+                        toastr.error("Please enter a valid youtube playlist link.");
+                    }
+                });
+
+                // on back button click
+                $('#backBtn').click(function () {
+                    window.location.href = '/Video/Playlist';
+                });
+            });
+
         </script>
     }
