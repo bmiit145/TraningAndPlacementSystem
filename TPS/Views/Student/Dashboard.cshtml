@@ -92,13 +92,29 @@
     <!-- App js -->
     <script src="~/assets/js/app.js"></script>
     <script>
-        function changeGridLayout(gridClass) {
+        @* function changeGridLayout(gridClass) {
+            console.log(gridClass);
             // Remove existing grid classes from each column
             $('.video-items > div[class^="col-"]').removeClass(function (index, className) {
                 return (className.match(/(^|\s)col-\S+/g) || []).join(' ');
             });
 
             $('.video-items > div').addClass(gridClass);
-        }
+        } *@
+
+
+        function changeGridLayout(gridClass) {
+    console.log(gridClass);
+    $('.video-items > div').each(function(index, element) {
+        var classes = $(element).attr('class').split(/\s+/);
+        classes = classes.filter(function(className) {
+            return !className.startsWith('col-md-');
+        });
+        $(element).attr('class', classes.join(' '));
+    });
+    $('.video-items > div').addClass(gridClass);
+}
+
+
     </script>
 }

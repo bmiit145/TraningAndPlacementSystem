@@ -79,6 +79,7 @@
                                 <button type="button" class="btn btn-success add-video ms-2">+</button>
                             </div>
                         </div>
+                    
                         <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                     </form>
                 }
@@ -274,8 +275,8 @@
 
                     // Check if the value is empty and it's not the first input field
                     if (!value && input.closest('.mb-3').index() !== 1) {
-                        input.parent().remove();
                         removeVideoTitle(input);
+                        input.parent().remove();
                     }
                     else if (isValidYouTubeUrl(value)) {
                         var videoId = extractVideoId(value);
@@ -445,6 +446,8 @@
                                             // trigger input event to fetch video title
                                             $(videoUrls[i]).trigger('input');
                                         }
+
+
                                     } else {
                                         console.log(error);
                                         toastr.error("Error fetching playlist videos. Please try again later.");
